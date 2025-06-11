@@ -10,5 +10,5 @@ secret.txt
 # Ignorar todos los archivos en la carpeta temp
 temp/
 
-.env
-# Ignorar archivos de configuración de IDEs
+# Ignorar solo el archivo .env dentro de settings_app
+settings_app/.env
