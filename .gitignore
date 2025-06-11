@@ -12,3 +12,5 @@ temp/
 
 # Ignorar solo el archivo .env dentro de settings_app
 settings_app/.env
+
+.env
