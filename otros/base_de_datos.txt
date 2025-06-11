@@ -1,0 +1,45 @@
+empresa/
+├── sucursales/                          <-- Las sucursales de la empresa
+├── usuarios/                            <-- Usuarios que se registran en la empresa
+├── roles/                               <-- Roles que definen permisos de los usuarios
+│   └── permisos/
+├── catalogo/                            <-- Información de productos
+│   ├── historial_articulo/              <-- Historial de cambios de artículos
+│   ├── lotes/                           <-- Lotes de productos disponibles
+│   ├── codigos_barras/                  <-- Códigos de barras para cada producto
+│   └── conversion_unidades/             <-- Conversión entre unidades (e.g. de piezas a cajas)
+├── pedidos/                             <-- Pedidos de clientes
+│   ├── item_pedidos/                    <-- Detalles de productos en cada pedido
+│   └── historial_estados/               <-- Historial de cambios de estado de los pedidos
+├── ventas/                              <-- Ventas realizadas
+├── clientes/                            <-- Información de clientes
+├── proveedores/                         <-- Información de proveedores
+
+
+http://localhost:8000/distribution/catalogo/?format=api
+
+✅ SQL para inicializar inventario por sucursal:
+sql
+Copiar
+Editar
+
+INSERT INTO inventario_sucursal (sucursal_id, articulo_id, cantidad)
+SELECT s.id AS sucursal_id, c.ID_Articulo AS articulo_id, 0 AS cantidad
+FROM account_sucursal s
+JOIN catalogo c ON s.empresa_id = c.ID_Empresa
+LEFT JOIN inventario_sucursal i
+  ON i.sucursal_id = s.id AND i.articulo_id = c.ID_Articulo
+WHERE i.id IS NULL;
+
+🌀 ¿Y si agregas una nueva sucursal?
+Cuando registres una nueva sucursal, también puedes ejecutar esto:
+
+sql
+Copiar
+Editar
+INSERT INTO inventario_sucursal (sucursal_id, articulo_id, cantidad)
+SELECT nueva_sucursal.id, c.ID_Articulo, 0
+FROM catalogo c
+JOIN account_sucursal nueva_sucursal ON nueva_sucursal.id = [ID_DE_LA_NUEVA_SUCURSAL]
+WHERE c.ID_Empresa = nueva_sucursal.empresa_id;
+🔁 Esto llenará el inventario inicial para la nueva sucursal.

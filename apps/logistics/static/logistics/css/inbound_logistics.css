@@ -1,0 +1,44 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: grid;
+    grid-template-columns: 200px 1fr; /* SliderBar fijo | Section flexible */
+    grid-template-rows: auto 1fr auto; /* Header | Contenido | Foster */
+    min-height: 100vh;    
+}
+        
+.header {
+    grid-column: 2; /* Solo en la columna derecha */
+    grid-row: 1;
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+        
+.sliderbar {
+    grid-column: 1;
+    grid-row: 1 / 4; /* Ocupa desde header hasta foster en altura */
+    background-color: #f0f0f0;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+}
+        
+.section {
+    grid-column: 2;
+    grid-row: 2; /* Espacio central (debajo del header) */
+    padding: 20px;
+    background-color: #f9f9f9;
+    overflow-y: auto;
+}
+        
+.foster {
+    grid-column: 2; /* Solo en la columna derecha */
+    grid-row: 3;
+    background-color: #333;
+    color: white;
+    padding: 8px;
+    text-align: center;
+    font-size: 0.8em;
+}

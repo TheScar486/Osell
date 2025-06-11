@@ -1,0 +1,77 @@
+/* Reset global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background-color: #1d1c1c;
+    font-family: 'Arial', sans-serif;
+}
+
+.logout-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.logout-card {
+    background: linear-gradient(145deg, #1e1e1e, #2b2b2b);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    color: #f0f0f0;
+}
+
+.logout-title {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #f0f0f0;
+}
+
+.logout-message {
+    font-size: 1.1em;
+    margin-bottom: 25px;
+    color: #e0e0e0;
+}
+
+.logout-redirect,
+.logout-optional {
+    font-size: 0.95em;
+    margin-top: 15px;
+    color: #b0b0b0;
+}
+
+.logout-link {
+    color: #1e90ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.logout-link:hover {
+    text-decoration: underline;
+}
+
+/* Animación de carga estilo loader */
+.logout-loader {
+    border: 4px solid #2a2a2a;
+    border-top: 4px solid #1e90ff;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    margin: 0 auto 20px auto;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

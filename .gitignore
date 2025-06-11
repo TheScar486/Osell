@@ -1,0 +1,11 @@
+# Ignorar todos los archivos .log
+*.log
+
+# Ignorar la carpeta node_modules
+node_modules/
+
+# Ignorar un archivo específico
+secret.txt
+
+# Ignorar todos los archivos en la carpeta temp
+temp/

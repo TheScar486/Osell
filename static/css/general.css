@@ -1,0 +1,302 @@
+/* Estilos base */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    background-color: #1d1c1c;
+    color: #f0f0f0;
+    overflow-x: hidden; /* Puedes dejarlo si es solo para evitar scroll horizontal */
+}
+
+html, body {
+    height: 100%; /* Asegúrate de que el body ocupe todo el alto de la ventana */
+    overflow-x: hidden; /* Solo desactiva el scroll horizontal */
+}
+
+/* Header */
+.header {
+    grid-column: 2;
+    grid-row: 1;
+    background-color: #1d1c1c;
+    color: white;
+    padding: 25px 25px; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+    position: relative;
+}
+
+.header-title-button {
+    color: white;
+    text-decoration: none;
+    font-size: 1.4em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column; /* Ahora en columna (uno sobre otro) */
+    align-items: flex-end;  /* Alineado a la derecha, puedes cambiar a 'flex-start' si lo quieres a la izquierda */
+    gap: 6px; /* Espacio entre usuario y sucursal */
+}
+
+.user-info h1 {
+    font-size: 1.1em;
+    font-weight: 500;
+    margin: 0;
+    color: #e0e0e0;
+}
+
+.user-icon {
+    width: 24px;
+    height: 24px;
+    fill: #f0f0f0;
+}
+
+.branch-details {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #f0f0f0;
+}
+
+.user-details {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #f0f0f0;
+}
+
+.branch-icon {
+    width: 20px;
+    height: 20px;
+    fill: #f0f0f0;
+}
+
+.branch-name {
+    font-size: 0.95em;
+    font-weight: 500;
+}
+
+.username {
+    font-size: 0.95em;
+    font-weight: 500;
+}
+
+
+/* Botones columna */
+.button-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 0px;
+    margin-top: 0; /* Eliminamos el margen superior */
+}
+
+/* Botones dashboard y logout */
+.dashboard-button,
+.logout-button {
+    /*transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);  Transición suave */
+    position: relative;
+    overflow: hidden; /* Para el efecto de iluminación */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: transparent;
+    color: #f0f0f0;
+    text-decoration: none;
+    padding: 0 15px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none !important;
+    box-shadow: none !important;
+    width: 100%;
+    box-sizing: border-box;
+    height: 35px;
+    margin: 0 auto;
+}
+
+.dashboard-button:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 1px #4a4a4a;
+    transform: translateY(-2px); /* Ligero movimiento hacia arriba */
+}
+
+.dashboard-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent);
+    transition: 0.5s;
+}
+
+.dashboard-button:hover::before {
+    left: 100%; /* Efecto de barra de luz que atraviesa */
+}
+
+.logout-button {
+    border-radius: 6px;
+    color: #ff0000;
+    font-size: 0.95em;
+    padding: 12px 15px;
+    /*transition: all 0.3s ease;*/
+}
+
+.logout-button:hover {
+    background-color: rgba(255, 0, 0, 0.15);
+    box-shadow: 0 0 0 1px rgba(255, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Iconos de botones */
+.button-icon,
+.logout-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+}
+
+.logout-icon {
+    width: 20px;
+    height: 20px;
+    fill: #ff0000;
+}
+
+.button-icon svg {
+    fill: currentColor;
+    width: 100%;
+    height: 100%;
+}
+
+/* Texto de botones */
+.button-text {
+    font-size: 16px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Logout section */
+.logout-container {
+    margin-top: auto;
+    padding: 10px 0;
+}
+
+.logout-form {
+    width: 100%;
+}
+
+/* Footer */
+.foster {
+    grid-column: 2;
+    grid-row: 3;
+    background-color: #1d1c1c;
+    color: #a0a0a0;
+    padding: 5px 25px; /* Mínimo espacio vertical */
+    text-align: center;
+    font-size: 0.7em; /* Tamaño mínimo legible */
+    z-index: 10;
+    position: relative;
+    height: 30px; /* Altura mínima */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Sidebar */
+.sliderbar {
+    grid-column: 1;
+    grid-row: 1 / 4;
+    background-color: #161616;
+    border-right: 1px solid #363636;
+    padding: 35px 0;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.0s ease;
+    width: 250px;
+    box-sizing: border-box;
+    z-index: 20;
+    position: relative;
+    /*transition: width 0.3s ease, padding 0.3s ease;*/
+}
+
+/* Sidebar colapsado */
+.sliderbar.collapsed {
+    width: 60px;
+    padding: 35px 0px;
+}
+
+.sliderbar.collapsed .button-column {
+    padding: 0 0px;
+}
+
+.sliderbar.collapsed .dashboard-button,
+.sliderbar.collapsed .logout-button {
+    padding: 12px 0px;
+    justify-content: center;
+    width: calc(100% - 10px);
+}
+
+
+.sliderbar.collapsed .button-text,
+.sliderbar.collapsed .logout-button span {
+    display: none;
+}
+
+.sliderbar.collapsed .button-icon,
+.sliderbar.collapsed .logout-icon {
+    margin: 0 auto;
+}
+
+.sliderbar.collapsed .logout-button:hover {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+.sliderbar.collapsed ~ .section {
+    transition: margin-left 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        grid-template-columns: 70px 1fr;
+    }
+
+    .sliderbar {
+        width: 70px;
+        padding: 20px 10px;
+    }
+
+    .button-text,
+    .logout-button span {
+        display: none;
+    }
+
+    .button-icon,
+    .logout-icon {
+        margin: 0 auto;
+    }
+
+    .dashboard-button,
+    .logout-button {
+        justify-content: center;
+        padding: 12px 5px;
+    }
+}

@@ -1,0 +1,179 @@
+/* Fuente principal (Poppins - Google Fonts) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Variables de color */
+:root {
+    --primary: #304255;
+    --secondary: #507CA9;
+    --light: #C2E8FF;
+    --dark: #011023;
+    --gray: #7C9DC6;
+    --error: #dc2626;
+}
+
+/* Reset y estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Fondo degradado */
+body {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--light) 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-attachment: fixed;
+}
+
+/* Contenedor del formulario */
+.container {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(48, 66, 85, 0.2);
+    padding: 40px;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Título */
+h1 {
+    text-align: center;
+    color: var(--dark);
+    font-weight: 600;
+    font-size: 28px;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+h1::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--primary);
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+
+/* Estilos de los formularios con etiquetas flotantes */
+.form-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-container {
+    position: relative;
+}
+
+input, select {
+    width: 100%;
+    padding: 18px 20px 12px; /* Ajustar el padding inferior para dejar más espacio */
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--dark);
+    box-sizing: border-box; /* Asegura que el padding no interfiera con el tamaño del input */
+}
+
+/* Etiquetas flotantes */
+label {
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    color: var(--gray);
+    font-size: 16px;
+    font-weight: 400;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Cuando el input tiene foco o el valor no está vacío, la etiqueta sube */
+input:focus, select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(80, 124, 169, 0.1);
+    outline: none;
+}
+
+input:focus ~ label, select:focus ~ label,
+input:not(:placeholder-shown) ~ label, select:not(:placeholder-shown) ~ label {
+    top: -8px;
+    left: 15px;
+    font-size: 12px;
+    padding: 0 5px;
+    color: var(--primary); /* Cambio de color a primario */
+}
+
+/* Mensajes de error */
+.error {
+    color: var(--error);
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Botón */
+button {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(48, 66, 85, 0.3);
+}
+
+button:hover {
+    background: linear-gradient(to right, var(--secondary), var(--primary));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(48, 66, 85, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Estilo para elementos opcionales */
+input[readonly], select[readonly] {
+    background-color: #f0f0f0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .container {
+        padding: 30px 20px;
+        margin: 0 15px;
+    }
+
+    body {
+        background: linear-gradient(to bottom, var(--primary), var(--light));
+    }
+
+    input, select {
+        padding: 15px 20px 8px;
+    }
+
+    label {
+        top: 15px;
+    }
+
+    input:focus ~ label, select:focus ~ label,
+    input:not(:placeholder-shown) ~ label, select:not(:placeholder-shown) ~ label {
+        top: 5px;
+        font-size: 11px;
+    }
+}

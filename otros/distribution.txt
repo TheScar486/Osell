@@ -1,0 +1,27 @@
+filtrado de hisotrial de distribucion 
+filtro 1. tipo puedes filtrar por cualquiera de las tres opciones 
+    a. traspasos 
+    b. entradas
+    c. solicitudes
+
+filtro 2. a diferencia del filtrado uno aqui debes escribir en la barra de buesqueda del filtro la sucursal a filtrar
+    a. sucursal 1
+    b. sucursal 2
+    c. sucursal 3
+    d. sucursal 4
+
+filtro 3. esta se compara con el filtrado dos pero a diferencia que aqui son personas 
+    a. presona 1
+    b. persona 2
+    c. persona 3
+    d. persona 4
+
+filtro 4. fecha aqui tienes un calendario donde eliges de que dia deseas filtrar ejemplo de 01/01/25 al 20/01/25 
+
+filtro 5. estado similar al filtro 1 donde puedes elegir cualquiera de las opciones de estado 
+    a. pendiente
+    b. aceptado
+    c. cancelado 
+    d. aprobado 
+    e. finalizado
+    

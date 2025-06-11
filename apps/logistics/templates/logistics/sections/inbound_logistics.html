@@ -1,0 +1,28 @@
+{% load static %}
+
+{% block content %}
+
+<title>Entradas</title>
+<link rel="stylesheet" href="{% static 'logistics/css/inbound_logistics.css' %}">
+
+<header class="distribucion-header">
+    <a href="{% url 'dasboard' %}" class="header-title-button">Logística</a>
+    <div class="user-info">
+        <h1>{{ user.username }}</h1>
+    </div>
+</header>
+<aside class="sliderbar">
+    <h3>SliderBar</h3>
+    <p>Ocupa toda la altura disponible.</p>
+</aside>
+
+<main class="section">
+    <h2>Section</h2>
+    <p>Contenido principal aquí.</p>
+</main>
+
+<footer class="foster">
+    <p>Foster</p>
+</footer>
+</body>
+{% endblock %}

@@ -1,0 +1,212 @@
+/* Fuente principal (Poppins - Google Fonts) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Variables de color */
+:root {
+    --primary: #2c2c2c;
+    --secondary: #454444;
+    --light: #7C9DC6;
+    --dark: #0a0a0a;
+    --gray: #363636;
+    --error: #dc2626;
+}
+
+/* Reset y estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: var(--dark);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 450px;
+    background: var(--primary);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(10, 10, 10, 0.5);
+    padding: 40px;
+    border: 1px solid var(--gray);
+}
+
+/* Mensaje de error SIMPLIFICADO (solo texto rojo) */
+.error-message {
+    color: var(--error);
+    text-align: center;
+    margin: 15px 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Resto de tus estilos permanecen igual */
+.login-title {
+    color: #C2E8FF;
+    font-weight: 600;
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.login-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--secondary);
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 18px 20px 10px;
+    border: 2px solid var(--gray);
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: rgba(30, 30, 30, 0.9);
+    color: white;
+}
+
+.floating-label {
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    color: var(--light);
+    font-size: 16px;
+    font-weight: 400;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.form-input:focus ~ .floating-label,
+.form-input:not(:placeholder-shown) ~ .floating-label {
+    top: 6px;
+    left: 15px;
+    font-size: 12px;
+    padding: 0 5px;
+    color: var(--light);
+}
+
+.form-input:focus {
+    border-color: var(--light);
+    box-shadow: 0 0 0 3px rgba(124, 157, 198, 0.2);
+    outline: none;
+}
+
+.login-button {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 10px rgba(10, 10, 10, 0.3);
+}
+
+.login-button:hover {
+    background: var(--gray);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(10, 10, 10, 0.4);
+}
+
+.login-button:active {
+    transform: translateY(0);
+}
+
+/* Modifica el contenedor de opciones */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    color: var(--light);
+}
+
+.forgot-password {
+    font-size: 14px;
+}
+
+.forgot-password a {
+    color: var(--light);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.forgot-password a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.signup-prompt {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--light);
+}
+
+.signup-prompt a {
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.signup-prompt a:hover {
+    color: var(--light);
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 30px 20px;
+        margin: 0 15px;
+    }
+    
+    .form-input {
+        padding: 15px 20px 8px;
+    }
+    
+    .floating-label {
+        top: 15px;
+    }
+    
+    .form-input:focus ~ .floating-label,
+    .form-input:not(:placeholder-shown) ~ .floating-label {
+        top: 5px;
+        font-size: 11px;
+    }
+}

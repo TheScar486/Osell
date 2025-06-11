@@ -1,0 +1,18 @@
+<!-- apps/account/templates/account/base_auth.html -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Auth{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'account/css/login.css' %}">
+</head>
+<body>
+
+    {% block content %}
+    <!-- Aquí se inserta el contenido del hijo (por ejemplo, login.html) -->
+    {% endblock %}
+
+    <script src="{% static 'account/js/auth.js' %}"></script>
+</body>
+</html>

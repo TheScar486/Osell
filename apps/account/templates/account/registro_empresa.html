@@ -1,0 +1,63 @@
+{% load static %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'account/css/registro_empresa.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Registro de Empresa</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="id_nombre_legal">Nombre Legal:</label>
+            {{ form.nombre_legal }}
+            {% if form.nombre_legal.errors %}
+                <div class="error">{{ form.nombre_legal.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_nombre_comercial">Nombre Comercial (opcional):</label>
+            {{ form.nombre_comercial }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_ruc">RUC:</label>
+            {{ form.ruc }}
+            {% if form.ruc.errors %}
+                <div class="error">{{ form.ruc.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_direccion_fiscal">Dirección Fiscal:</label>
+            {{ form.direccion_fiscal }}
+            {% if form.direccion_fiscal.errors %}
+                <div class="error">{{ form.direccion_fiscal.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_telefono_contacto">Teléfono de Contacto (opcional):</label>
+            {{ form.telefono_contacto }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_email_contacto">Email de Contacto (opcional):</label>
+            {{ form.email_contacto }}
+            {% if form.email_contacto.errors %}
+                <div class="error">{{ form.email_contacto.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_sector_industrial">Sector Industrial (opcional):</label>
+            {{ form.sector_industrial }}
+        </div>
+
+        <button type="submit">Continuar al Registro de Usuario</button>
+    </form>
+</div>
+{% endblock %}

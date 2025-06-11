@@ -1,0 +1,121 @@
+SCAR/
+├── apps/
+│   ├── account/
+│   │   ├── static/
+│   │   │   └── account/
+│   │   │       ├── css/
+│   │   │       │   ├── auth.css
+│   │   │       │   ├── forgot_password.css
+│   │   │       │   ├── login.css
+│   │   │       │   ├── registro_empresa.css
+│   │   │       │   └── logout.css
+│   │   │       ├── img/
+│   │   │       └── js/
+│   │   │           └── auth.js
+│   │   ├── templates/
+│   │   │   └── account/
+│   │   │       ├── base_auth.html
+│   │   │       ├── forgot_password.html
+│   │   │       ├── home.html
+│   │   │       ├── login.html
+│   │   │       ├── logout.html
+│   │   │       ├── forgot_password_email.html
+│   │   │       ├── registro_empresa.html
+│   │   │       └── registro_usuario.html
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py y aqui estan los models de account_sucursal y account_empreas
+│   │   ├── tests.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── clients/
+│   ├── distribution/
+│   │   ├── static/
+│   │   │   └── distribution/
+│   │   │       ├── css/
+│   │   │       │   ├── modal_requests.css
+│   │   │       │   └── requests.css
+│   │   │       ├── img/
+│   │   │       ├── js/
+│   │   │       │   ├── modal_requests.js 
+│   │   │       │   └── requests.js 
+│   │   ├── templates/
+│   │   │   └── distribution/
+│   │   │       ├── sections/
+│   │   │       │   ├── history.html actaulmente estoy trabajando en este html aqui quiero cargar los datos
+│   │   │       │   ├── inbound_transfers.html
+│   │   │       │   ├── requests.html
+│   │   │       │   └── transfers.html
+│   │   │       └── destribution.html
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── forms.py
+│   │   ├── models.py aqui esta el models de solicitud_pedidos 
+│   │   ├── routes.py
+│   │   ├── tests.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── finance/
+│   ├── logistics/
+│   │   ├── static/
+│   │   │   └── logistics/
+│   │   │       ├── css/
+│   │   │       │   ├── alerts_notifications.css
+│   │   │       │   ├── inbound_logistics.css
+│   │   │       │   ├── inventory_adjustments.css
+│   │   │       │   ├── location_tracking.css
+│   │   │       │   ├── product.css
+│   │   │       │   ├── purchanse_orders_post.css
+│   │   │       │   ├── reporting_analytics.css
+│   │   │       │   ├── stock_control.css
+│   │   │       │   ├── supplier_management.css
+│   │   │       │   └── logistics.css
+│   │   │       ├── img/
+│   │   │       ├── js/
+│   │   │       │   ├── alerts_notifications.js
+│   │   │       │   ├── inbound_logistics.js
+│   │   │       │   ├── inventory_adjustments.js
+│   │   │       │   ├── location_tracking.js
+│   │   │       │   ├── product.js
+│   │   │       │   ├── purchanse_orders_post.js
+│   │   │       │   ├── reporting_analytics.js
+│   │   │       │   ├── stock_control.js
+│   │   │       │   ├── supplier_management.js
+│   │   │       └── └── logistics.js
+│   │   ├── templates/
+│   │   │   └── logistics/
+│   │   │       ├── sections/
+│   │   │       │   ├── alerts_notifications.html
+│   │   │       │   ├── inbound_logistics.html
+│   │   │       │   ├── inventory_adjustments.html
+│   │   │       │   ├── location_tracking.html
+│   │   │       │   ├── product.html
+│   │   │       │   ├── purchanse_orders_post.html
+│   │   │       │   ├── reporting_analytics.html
+│   │   │       │   ├── stock_control.html
+│   │   │       │   └── supplier_management.html
+│   │   │       └── logistics.html
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── tests.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── sales/
+│   └── settings/
+├── env/
+├── media/
+├── settings_app/
+│   ├── __init__.py
+│   ├── .env
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── static/
+├── .gitignore
+├── manage.py
+└── requirements.txt
