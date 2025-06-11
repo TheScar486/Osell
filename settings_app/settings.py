@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-2q39-q(u4e2j*&6q161ukwki5@9&bb!%#v31$5utq#ns)2**uw'
 
-ALLOWED_HOSTS = ['miapp.com', 'www.miapp.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['osell.onrender.com', '127.0.0.1', 'localhost']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
