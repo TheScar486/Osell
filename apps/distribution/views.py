@@ -128,10 +128,15 @@ def generar_folio_pedido():
             numero = int(ultimo_folio.replace('PE-', ''))
             nuevo_numero = numero + 1
         except ValueError:
+            # Si el último folio no tiene el formato esperado (ej. "PE-XXX"), se reinicia a 1
+            logger.warning(f"Formato de último folio inválido '{ultimo_folio}'. Reiniciando folio a PE-000001.")
             nuevo_numero = 1
     else:
         nuevo_numero = 1
-    return f"PE-{nuevo_numero:06d}"
+    
+    folio_generado = f"PE-{nuevo_numero:06d}"
+    logger.info(f"Folio de pedido generado: {folio_generado}") # <-- Agrega este log
+    return folio_generado
 
 @login_required
 def crear_solicitud(request):
@@ -152,7 +157,10 @@ def crear_solicitud(request):
             sucursal = Sucursal.objects.get(id=sucursal_id)
             empresa = Empresa.objects.get(id=empresa_id)
 
+            # Generar el pedido_id una sola vez para todo el pedido
             pedido_id = generar_folio_pedido()
+            logger.info(f"Usando pedido_id para la solicitud: {pedido_id}") # <-- Agrega este log
+
             created_items = []
 
             for item in datos_tabla:
@@ -169,32 +177,38 @@ def crear_solicitud(request):
                     empresa=empresa,
                     sucursal=sucursal,
                     usuario=request.user,
-                    pedido_id=pedido_id,
-                    estado=item.get('estado', 'Pendiente')  # Establecer estado si se pasa en el item
+                    pedido_id=pedido_id, # Asegúrate de que esto se está asignando
+                    estado=item.get('estado', 'Pendiente')
                 )
-                solicitud.full_clean()  # Valida el modelo antes de guardar
+                solicitud.full_clean()
                 solicitud.save()
                 created_items.append(solicitud.id)
-
+            
+            logger.info(f"Pedido {pedido_id} guardado con éxito. Ítems creados: {len(created_items)}") # <-- Agrega este log
             return JsonResponse({
                 'success': True,
                 'count': len(created_items),
                 'ids': created_items,
-                'pedido_id': pedido_id
+                'pedido_id': pedido_id # <-- Asegúrate de que este valor no sea nulo/vacío
             })
 
         except json.JSONDecodeError:
+            logger.error("Datos JSON inválidos recibidos.", exc_info=True)
             return JsonResponse({'success': False, 'error': 'Datos JSON inválidos'}, status=400)
         except Sucursal.DoesNotExist:
+            logger.error(f"Sucursal con ID {sucursal_id} no encontrada.", exc_info=True)
             return JsonResponse({'success': False, 'error': 'Sucursal no encontrada'}, status=404)
         except Empresa.DoesNotExist:
+            logger.error(f"Empresa con ID {empresa_id} no encontrada.", exc_info=True)
             return JsonResponse({'success': False, 'error': 'Empresa no encontrada'}, status=404)
         except ValidationError as e:
+            logger.error(f"Error de validación al crear solicitud: {dict(e)}", exc_info=True)
             return JsonResponse({'success': False, 'error': f'Error de validación: {dict(e)}'}, status=400)
         except Exception as e:
             logger.error(f"Error al crear solicitud: {str(e)}", exc_info=True)
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
+    logger.warning("Intento de acceder a crear_solicitud con método no permitido.")
     return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
 
 from rest_framework.views import APIView
@@ -237,7 +251,7 @@ def export_solicitudes_excel(request, pedido_id=None):
     if not pedido_id:
         return HttpResponse("Se requiere un ID de pedido para generar este formato de reporte.", status=400)
 
-    solicitudes = SolicitudPedido.objects.filter(pedido_id=pedido_id, usuario__empresa=user.empresa).order_by('id')
+    solicitudes = SolicitudPedido.objects.filter(pedido_id=pedido_id, usuario__empresa=user.empresa).order_by('departamento')
 
     if not solicitudes.exists():
         return HttpResponse(f"No se encontraron solicitudes para el Pedido ID: {pedido_id} o no tiene permiso para acceder.", status=404)
@@ -338,7 +352,7 @@ def export_solicitudes_excel(request, pedido_id=None):
         sheet[f'B{row_offset_header + 2}'] = primer_solicitud.usuario.username if primer_solicitud.usuario else ""
         sheet[f'E{row_offset_header + 2}'] = "Fecha Registro"
         sheet[f'E{row_offset_header + 2}'].font = Font(bold=True)
-        sheet[f'F{row_offset_header + 2}'] = primer_solicitud.fecha_registro.strftime("%Y-%m-%d %H:%M:%S") if primer_solicitud.fecha_registro else ""
+        sheet[f'F{row_offset_header + 2}'] = timezone.localtime(primer_solicitud.fecha_registro).strftime("%Y-%m-%d %H:%M:%S") if primer_solicitud.fecha_registro else ""
 
         # --- Encabezados de la Tabla de Artículos (fila 6) ---
         header_table_row = 6
@@ -372,7 +386,7 @@ def export_solicitudes_excel(request, pedido_id=None):
                 # No se aplica fill para dejar el fondo BLANCO
                 cell.border = Border(top=dashed_top_border_style) # Aplicar solo borde superior
 
-            sheet[f"A{current_data_row}"] = i + 1
+            sheet[f"A{current_data_row}"] = solicitud.cantidad
             sheet[f"B{current_data_row}"] = solicitud.factor
             sheet[f"C{current_data_row}"] = solicitud.codigo
             sheet[f"D{current_data_row}"] = solicitud.descripcion
