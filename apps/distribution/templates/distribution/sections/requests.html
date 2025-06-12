@@ -121,7 +121,7 @@
         </div>
         <!-- Tabla con las columnas -->
             <div class="table-container">
-                    <table>
+                    <table id="mainOrderTable">
                         <thead>
                             <tr>
                                 <th>Cantidad</th>
@@ -159,16 +159,15 @@
     </footer>
     
 <div id="factorModal" class="modal" style="display: none;">
-  <!-- Contenido del modal -->
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Factor de Productos</h2>
-      <span class="close-btn">&times;</span> <!-- Botón de cerrar a la derecha -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Factor de Productos</h2>
+            <span class="close-btn">&times;</span>
+        </div>
+        <table>
+            <tbody id="factorBody"></tbody>
+        </table>
     </div>
-    <table>
-      <tbody id="factorBody"></tbody>
-    </table>
-  </div>
 </div>
 
 <!-- MODAL -->

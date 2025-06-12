@@ -1120,20 +1120,23 @@ function finalizarPedido() {
         return response.json();
     })
     .then(data => {
+        console.log('Respuesta del servidor:', data); // <-- AÑADIR
         if (data.success) {
-            alert("¡Pedido guardado correctamente!");
+            alert(`¡Pedido guardado correctamente! Número de pedido: ${data.pedido_id}`);
             window.location.reload();
+
         } else {
             throw new Error(data.error || 'Error desconocido');
         }
     })
+
     .catch(error => {
         console.error('Error completo:', error);
         alert(`Error: ${error.message}`);
     });
 }
 
-// Función para obtener el CSRF token
+// Función para obtener el CSRF token (ya está bien)
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
