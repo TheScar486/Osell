@@ -876,7 +876,7 @@ tr.factor-aplicado {
   width: 95%;
   max-width: 1200px;
   border-radius: 10px;
-  height: 800px; /* Altura fija para el modal */
+  height: 600px; /* Altura fija para el modal */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -1018,3 +1018,44 @@ tr.factor-aplicado {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Botón de confirmación del modal Swal */
+.pedido-confirm-button {
+    background-color: #3a3a3a;
+    color: #f0f0f0;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    margin-top: 15px;
+}
+
+.pedido-confirm-button:hover {
+    background-color: #565656; /* Gris más claro en hover */
+}
+
+.copy-button {
+    background-color: #3a3a3a;
+    color: #f0f0f0; 
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-button svg {
+    margin-right: 0; /* Ya que es solo el icono */
+}
+
+.copy-button:hover {
+    background-color: #565656;
+}
+
+
