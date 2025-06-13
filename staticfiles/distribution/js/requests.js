@@ -1065,43 +1065,52 @@ document.addEventListener('keydown', function(event) {
 
 // Función para finalizar el pedido
 function finalizarPedido() {
-    const filas = document.querySelectorAll('table tbody tr');
-    const datosTabla = [];
+    const tabla = document.querySelector('#mainOrderTable tbody');
+    if (!tabla) {
+        alert("No se encontró la tabla principal.");
+        return;
+    }
 
-    // Obtener el comentario (solo una vez)
-    const comentarioGeneral = document.getElementById('comentariosTextarea').value.trim();
+    const filas = tabla.querySelectorAll('tr');
+    if (filas.length === 0) {
+        alert("No hay productos para procesar.");
+        return;
+    }
 
-    filas.forEach(fila => {
-        const getValue = (selector, isNumber = false) => {
-            const element = fila.querySelector(selector);
-            if (!element) return isNumber ? 0 : '';
+    const datosTabla = Array.from(filas).map(fila => {
+        const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
+        const unidad = fila.children[1]?.textContent.trim() || '';
+        const codigo = fila.children[2]?.textContent.trim() || '';
+        const descripcion = fila.children[3]?.textContent.trim() || '';
+        const proveedor = fila.children[4]?.textContent.trim() || '';
+        const precioCompra = parseFloat(fila.children[5]?.textContent) || 0;
+        const precioBase = parseFloat(fila.children[6]?.textContent) || 0;
+        const importe = parseFloat(fila.querySelector('.importe-cell')?.textContent) || 0;
 
-            const input = element.querySelector('input');
-            const value = input ? input.value : element.innerText.trim();
+        // Validación por si algún campo se sale de rango
+        if (cantidad > 2147483647) {
+            alert(`La cantidad del producto "${descripcion}" excede el límite permitido.`);
+            throw new Error('Cantidad fuera de rango');
+        }
 
-            if (isNumber) {
-                const num = parseFloat(value.replace(',', ''));
-                return isNaN(num) ? 0 : num;
-            }
-
-            return value;
+        return {
+            cantidad,
+            unidad,
+            codigo,
+            descripcion,
+            proveedor,
+            precioCompra,
+            precioBase,
+            importe,
+            factor: unidad || '', // puedes usar la unidad si aplica
+            departamento: proveedor || '',
+            comentario: '',  // si no tienes input para esto
+            estado: 'Pendiente'  // valor por defecto que espera el modelo
         };
 
-        datosTabla.push({
-            cantidad: getValue('td:nth-child(1)', true),
-            factor: getValue('td:nth-child(2)'),
-            codigo: getValue('td:nth-child(3)'),
-            descripcion: getValue('td:nth-child(4)'),
-            departamento: getValue('td:nth-child(5)'),
-            compra: getValue('td:nth-child(6)', true),
-            venta: getValue('td:nth-child(7)', true),
-            importe: getValue('td:nth-child(8)', true),
-            comentario: comentarioGeneral // ← aquí va el valor real
-        });
     });
 
-    console.log('Datos a enviar:', datosTabla);
-
+    // ✅ ENVÍO SEGURO (AJAX o fetch)
     fetch('/distribution/crear/', {
         method: 'POST',
         headers: {
@@ -1110,30 +1119,57 @@ function finalizarPedido() {
         },
         body: JSON.stringify({ datos: datosTabla })
     })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(err => {
-                console.error('Error del servidor:', err);
-                throw new Error(err.error || 'Error al guardar');
-            });
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert("¡Pedido guardado correctamente!");
-            window.location.reload();
+            const pedidoId = data.pedido_id || 'Desconocido';  // Aquí tomamos el pedidoId de la respuesta del servidor
+            Swal.fire({
+                icon: 'success',
+                title: '¡Pedido finalizado!',
+                html: `
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <strong>Pedido ID:</strong> 
+                        <span style="color:#f0f0f0; font-weight: bold;" id="pedido-id-text">${pedidoId}</span>
+                        <button id="copy-pedido-id" class="copy-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width: 16px; height: 16px; fill: #f0f0f0;">
+                                <path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/>
+                            </svg>
+                        </button>
+                    </div>
+                `,
+                confirmButtonText: 'Aceptar',
+                background: '#1e1e1e',
+                color: '#f0f0f0',
+                customClass: {
+                    confirmButton: 'pedido-confirm-button'
+                },
+                backdrop: false,
+                buttonsStyling: false
+            }).then(() => {
+                localStorage.removeItem('tablaTemporal');
+                location.reload();
+            });
+
+            // Función para copiar al portapapeles
         } else {
-            throw new Error(data.error || 'Error desconocido');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.error || 'Ocurrió un error al finalizar el pedido.',
+            });
         }
     })
     .catch(error => {
-        console.error('Error completo:', error);
-        alert(`Error: ${error.message}`);
+        console.error('Error al finalizar el pedido:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al procesar el pedido.',
+        });
     });
 }
 
-// Función para obtener el CSRF token
+// Función para obtener el CSRF token (ya está bien)
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
