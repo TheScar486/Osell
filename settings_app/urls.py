@@ -17,7 +17,7 @@ Including another URLconf
 # settings_app/urls.py
 from django.contrib import admin
 from django.urls import path, include
-from apps.account.views import home 
+from apps.account.views import home, error_502_view # Importa tu vista de error
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,3 +26,7 @@ urlpatterns = [
     path('distribution/', include('apps.distribution.urls')),
     path('logistics/', include('apps.logistics.urls')),
 ]
+
+# Configura los manejadores de errores
+handler502 = 'apps.account.views.error_502_view'
+handler500 = 'apps.account.views.error_502_view' # También para errores 500

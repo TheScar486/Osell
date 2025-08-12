@@ -104,6 +104,18 @@ def login_view(request):
 
 from django.contrib.auth.decorators import login_required
 
+# apps/account/views.py
+
+from django.shortcuts import render
+
+# ... tus otras vistas ...
+
+def error_502_view(request, *args, **kwargs):
+    return render(request, 'Error-502-Bad-Gateway.html', status=502)
+
+def handler500(request, *args, **kwargs):
+    return render(request, 'Error-502-Bad-Gateway.html', status=500)
+
 @login_required
 def dashboard(request):
     # Obtener datos de sesión
