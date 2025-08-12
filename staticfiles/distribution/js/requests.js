@@ -590,7 +590,29 @@ document.addEventListener('DOMContentLoaded', restaurarTablaDesdeLocalStorage);
 
 function insertIntoMainTable(item) {
     const mainTableBody = document.querySelector('.table-container table tbody');
-    if (!mainTableBody) return;
+    if (!mainTableBody) {
+        console.error("Error: No se encontró el cuerpo de la tabla principal.");
+        return;
+    }
+
+    // --- NUEVO CÓDIGO DE VALIDACIÓN ---
+    const codigoProductoNuevo = item.Codigo_Principal;
+    const filasExistentes = mainTableBody.querySelectorAll('tr');
+
+    let productoYaExiste = false;
+    filasExistentes.forEach(fila => {
+        const codigoExistente = fila.cells[2]?.textContent.trim();
+        if (codigoExistente === codigoProductoNuevo) {
+            productoYaExiste = true;
+        }
+    });
+
+    if (productoYaExiste) {
+        alert("¡Este producto ya se encuentra en la tabla!");
+        cerrarModal();
+        return;
+    }
+    // --- FIN DEL NUEVO CÓDIGO ---
 
     let cantidadUsuario = prompt("Ingrese la cantidad deseada:", "1");
 
@@ -602,7 +624,8 @@ function insertIntoMainTable(item) {
         alert("Cantidad inválida. No se agregó el producto.");
         return;
     }
-
+    
+    // El resto de la función se mantiene igual...
     cerrarModal();
 
     const newRow = document.createElement('tr');
@@ -634,7 +657,7 @@ function insertIntoMainTable(item) {
         }
 
         guardarTablaEnLocalStorage();
-        actualizarTotales(); // ⚠️ Suma total cantidad e importe
+        actualizarTotales();
     }
 
     cantidadInput.addEventListener('input', actualizarImporte);
@@ -645,7 +668,7 @@ function insertIntoMainTable(item) {
 
     mainTableBody.appendChild(newRow);
     guardarTablaEnLocalStorage();
-    actualizarTotales(); // ⚠️ Llamar también aquí por si se agregó nueva fila
+    actualizarTotales();
 }
 
 // ⚠️ Esta función se encarga de sumar y mostrar totales
