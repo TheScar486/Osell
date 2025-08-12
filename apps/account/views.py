@@ -116,6 +116,11 @@ def error_502_view(request, *args, **kwargs):
 def handler500(request, *args, **kwargs):
     return render(request, 'Error-502-Bad-Gateway.html', status=500)
 
+from django.shortcuts import render
+
+def error_502_view(request):
+    return render(request, 'Error-502-Bad-Gateway.html', status=502)
+
 @login_required
 def dashboard(request):
     # Obtener datos de sesión

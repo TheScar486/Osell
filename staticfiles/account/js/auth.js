@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const form = document.querySelector('.login-form');
+    const form = document.querySelector('.auth-form');
     if (!form) return;
 
     form.addEventListener('submit', function (e) {
-        e.preventDefault(); // Detenemos el envío normal del formulario
+        e.preventDefault(); // Evita el envío tradicional del formulario
 
         const inputs = form.querySelectorAll('input[required]');
         let isValid = true;
+        const formData = new FormData(form);
 
         inputs.forEach(input => {
             if (!input.value.trim()) {
@@ -22,42 +23,42 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        const formData = new FormData(form);
-        const timeoutInSeconds = 5; // Define el tiempo de espera en segundos
-        
-        const timeoutPromise = new Promise((resolve, reject) => {
-            setTimeout(() => {
-                reject(new Error('TimeoutError'));
-            }, timeoutInSeconds * 1000);
-        });
+        // --- Lógica de petición asíncrona con límite de tiempo ---
+        const timeout = 30000; // 30 segundos en milisegundos
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-        const fetchPromise = fetch(form.action, {
+        fetch(form.action, {
             method: 'POST',
-            body: formData
+            body: formData,
+            signal: controller.signal,
+        })
+        .then(response => {
+            clearTimeout(timeoutId); // Cancela el temporizador de tiempo de espera
+            if (response.ok) {
+                // Si la respuesta es exitosa (código 200), redirige al dashboard
+                window.location.href = '/dashboard/'; 
+            } else {
+                // Si hay un error, maneja la respuesta
+                return response.json().then(errorData => {
+                    alert(errorData.error);
+                }).catch(() => {
+                    // Si la respuesta no es JSON, muestra un error genérico
+                    alert('Error en el servidor. Inténtalo de nuevo.');
+                });
+            }
+        })
+        .catch(error => {
+            clearTimeout(timeoutId); // Cancela el temporizador de tiempo de espera
+            if (error.name === 'AbortError') {
+                // Si el error es por tiempo de espera
+                console.error('El servidor no respondió en el tiempo límite.');
+                window.location.href = '/error-502-bad-gateway/'; // Redirige a tu URL de error
+            } else {
+                // Otros errores de red o del navegador
+                console.error('Error en la petición:', error);
+                alert('Ocurrió un problema de red. Por favor, revisa tu conexión.');
+            }
         });
-
-        Promise.race([fetchPromise, timeoutPromise])
-            .then(response => {
-                // El servidor respondió a tiempo
-                if (response.redirected) {
-                    // Si el servidor ya nos redirige, seguimos la redirección
-                    window.location.href = response.url;
-                } else {
-                    // Si no, mostramos un mensaje de éxito o procesamos la respuesta
-                    // Aquí podrías procesar la respuesta del servidor si no es una redirección
-                    // Por ejemplo, renderizar un mensaje de error o éxito
-                    console.log('Respuesta del servidor recibida.');
-                }
-            })
-            .catch(error => {
-                if (error.message === 'TimeoutError' || error.name === 'AbortError' || error.name === 'TypeError') {
-                    // Si hay un error de tiempo de espera o de red
-                    window.location.href = '/error-404/'; // Redirigimos a la página de error
-                } else {
-                    // Otro tipo de error
-                    console.error('Error al iniciar sesión:', error);
-                    alert('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.');
-                }
-            });
     });
 });
