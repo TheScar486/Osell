@@ -44,11 +44,13 @@ INSTALLED_APPS = [
     'rest_framework',
 ]
 
+# settings_app/settings.py
+
 MIDDLEWARE = [
+    'apps.account.middleware.OperationalErrorMiddleware',  # Mueve tu middleware al inicio
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'apps.account.middleware.OperationalErrorMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
