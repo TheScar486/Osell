@@ -106,12 +106,11 @@ def login_view(request):
 
 from django.shortcuts import render
 
-# Esta es la vista que debes agregar
-def error_404_view(request, exception=None):
+def error_404_view(request, exception):
     """
     Renderiza la página de error 404 personalizada.
     """
-    return render(request, 'error-404-not-found.html', status=404)
+    return render(request, 'Error-404-Not-Found.html', status=404)
 
 from django.contrib.auth.decorators import login_required
 
