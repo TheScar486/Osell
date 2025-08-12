@@ -102,15 +102,15 @@ def login_view(request):
 
     return render(request, 'account/login.html')
 
-# ... (todo el código de tu archivo views.py que ya tienes arriba) ...
-
 from django.shortcuts import render
 
-def error_404_view(request, exception):
+# ... tus otras vistas ...
+
+def error_502_view(request, *args, **kwargs):
     """
-    Renderiza la página de error 404 personalizada.
+    Vista personalizada para manejar errores 502 (Bad Gateway).
     """
-    return render(request, 'Error-404-Not-Found.html', status=404)
+    return render(request, 'Error-502-Bad-Gateway.html', status=502)
 
 from django.contrib.auth.decorators import login_required
 

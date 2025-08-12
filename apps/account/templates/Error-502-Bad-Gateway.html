@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error 404 - Sin Respuesta del Servidor</title>
+    <title>Error 502 - Bad Gateway</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -56,14 +56,6 @@
             --transition-speed-fast: 0.1s;
             --transition-speed-medium: 0.2s;
             --transition-speed-slow: 0.3s;
-
-            /* Colores para las Partículas - Tema Oscuro */
-            --particle-color-dark: #ffffff;
-            --particle-line-color-dark: rgba(255, 255, 255, 1);
-
-            /* ... degradados ... */
-            --color-primary-dark-blended: rgba(12, 14, 22, 0.7);
-            --header-height: 80px;
         }
 
         body {
@@ -108,15 +100,8 @@
             margin: 0;
             line-height: 1;
             text-shadow: 2px 2px 4px var(--shadow-light);
-            animation: pulse 2s infinite ease-in-out;
         }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
+        
         .error-message {
             font-size: 2rem;
             font-weight: 600;
@@ -185,32 +170,20 @@
         .btn-home:active {
             transform: translateY(0);
         }
-
-        /* Contenedor del fondo para las partículas */
-        #particles-js {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
     </style>
 </head>
 <body>
 
-<div id="particles-js"></div>
-
 <div class="error-container">
-    <h1 class="error-code">404</h1>
-    <h2 class="error-message">¡El servidor está jugando a las escondidas!</h2>
+    <h1 class="error-code">502</h1>
+    <h2 class="error-message">¡Puerta de Enlace (Bad Gateway)!</h2>
     <p class="error-description">
-        Disculpa, parece que el servidor se nos perdió. Lo hemos buscado por todos los rincones del internet, pero no quiere salir. Si quieres unirte a la búsqueda, vuelve a intentarlo en un momento. ¡Quizás aparezca!
+        Disculpa, nuestro servidor de entrada parece estar peleado con el servidor principal y no se quieren hablar. Ya les dijimos que se porten bien. Mientras tanto, espera un momento y vuelve a intentarlo.
     </p>
     <a href="/" class="btn-home">Volver al Inicio</a>
 
     <div class="contact-info">
-        <p>Si la búsqueda se vuelve complicada, puedes contactar a nuestro equipo especializado:</p>
+        <p>Si la puerta sigue cerrada con llave, puedes contactar a nuestro equipo de soporte para que los obligue a hablar:</p>
         <p>
             Teléfono: <a href="tel:+50242610157">+502 4261-0157</a>
         </p>
@@ -222,95 +195,6 @@
         </p>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-<script>
-    particlesJS('particles-js', {
-        "particles": {
-            "number": {
-                "value": 80,
-                "density": {
-                    "enable": true,
-                    "value_area": 800
-                }
-            },
-            "color": {
-                "value": "#ffffff"
-            },
-            "shape": {
-                "type": "circle",
-                "stroke": {
-                    "width": 0,
-                    "color": "#000000"
-                }
-            },
-            "opacity": {
-                "value": 0.5,
-                "random": false
-            },
-            "size": {
-                "value": 3,
-                "random": true
-            },
-            "line_linked": {
-                "enable": true,
-                "distance": 150,
-                "color": "#ffffff",
-                "opacity": 0.4,
-                "width": 1
-            },
-            "move": {
-                "enable": true,
-                "speed": 6,
-                "direction": "none",
-                "random": false,
-                "straight": false,
-                "out_mode": "out",
-                "bounce": false
-            }
-        },
-        "interactivity": {
-            "detect_on": "canvas",
-            "events": {
-                "onhover": {
-                    "enable": true,
-                    "mode": "grab"
-                },
-                "onclick": {
-                    "enable": true,
-                    "mode": "push"
-                },
-                "resize": true
-            },
-            "modes": {
-                "grab": {
-                    "distance": 400,
-                    "line_linked": {
-                        "opacity": 1
-                    }
-                },
-                "bubble": {
-                    "distance": 400,
-                    "size": 40,
-                    "duration": 2,
-                    "opacity": 8,
-                    "speed": 3
-                },
-                "repulse": {
-                    "distance": 200,
-                    "duration": 0.4
-                },
-                "push": {
-                    "particles_nb": 4
-                },
-                "remove": {
-                    "particles_nb": 2
-                }
-            }
-        },
-        "retina_detect": true
-    });
-</script>
 
 </body>
 </html>

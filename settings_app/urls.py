@@ -18,14 +18,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from apps.account.views import home 
+from apps.account.views import home, error_502_view  # Importa la vista de error
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
-    path('account/', include('apps.account.urls')),  # Asegúrate de incluir las URLs de tu aplicación
+    path('account/', include('apps.account.urls')),
     path('distribution/', include('apps.distribution.urls')),
     path('logistics/', include('apps.logistics.urls')),
 ]
 
-from django.conf.urls import handler404
-handler404 = 'apps.account.views.error_404_view'
+# Asigna la vista a la variable handler502
+# Esto le dice a Django qué vista usar cuando se encuentra un error 502.
+handler502 = error_502_view
