@@ -18,7 +18,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from apps.account.views import home 
-from apps.account.views import home, error_502_view  # Importa la vista de error
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,7 +26,3 @@ urlpatterns = [
     path('distribution/', include('apps.distribution.urls')),
     path('logistics/', include('apps.logistics.urls')),
 ]
-
-# Asigna la vista a la variable handler502
-# Esto le dice a Django qué vista usar cuando se encuentra un error 502.
-handler502 = error_502_view

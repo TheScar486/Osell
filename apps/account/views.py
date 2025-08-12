@@ -102,16 +102,6 @@ def login_view(request):
 
     return render(request, 'account/login.html')
 
-from django.shortcuts import render
-
-# ... tus otras vistas ...
-
-def error_502_view(request, *args, **kwargs):
-    """
-    Vista personalizada para manejar errores 502 (Bad Gateway).
-    """
-    return render(request, 'Error-502-Bad-Gateway.html', status=502)
-
 from django.contrib.auth.decorators import login_required
 
 @login_required
