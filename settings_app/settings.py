@@ -47,7 +47,7 @@ INSTALLED_APPS = [
 # settings_app/settings.py
 
 MIDDLEWARE = [
-    'apps.account.middleware.OperationalErrorMiddleware',  # Mueve tu middleware al inicio
+    'apps.account.middleware.ProductionErrorMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
