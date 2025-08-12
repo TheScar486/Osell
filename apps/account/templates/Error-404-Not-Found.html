@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error 404 - Sin Respuesta del Servidor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Colores Principales - Negro con Matices Azules Oscuros */
+            --color-primary-dark: #0c0e16;
+            --color-secondary-dark: #141824;
+            --color-tertiary-dark: #1d2333;
+            --color-footer-dark: #080a10;
+
+            /* Colores de Acento y Interacción - Morado Profundo */
+            --color-accent: #8a3ab9;
+            --color-accent-darker: #782ca3;
+            --color-button-primary: #5e2eb3;
+            --color-button-primary-hover: #7242c2;
+
+            /* Colores de Texto */
+            --color-text-light: #f0f0f0;
+            --color-text-muted: #a0a0a0;
+            --color-text-card-description: #c0c0c0;
+            --color-text-dark: #000000;
+            
+            /* Colores de alerta*/
+            --color-text-alert: #ff0000;
+
+            /* Nuevas variables para botones */
+            --color-background-white: #ffffff;
+
+            --color-button-fill-normal-bg: var(--color-background-white);
+            --color-button-fill-normal-text: var(--color-text-dark);
+
+            --color-button-outline-normal-border: var(--color-text-light);
+            --color-button-outline-normal-text: var(--color-text-light);
+            
+            --color-button-outline-hover-fill: var(--color-background-white);
+            --color-button-outline-hover-text: var(--color-text-dark);
+
+            /* Sombras */
+            --shadow-light: rgba(0, 0, 0, 0.4);
+            --shadow-medium: rgba(0, 0, 0, 0.5);
+            --shadow-strong: rgba(0, 0, 0, 0.7);
+
+            /* Bordes y Transiciones */
+            --border-accent-subtle: rgba(138, 58, 185, 0.2);
+            --border-divider: rgba(255, 255, 255, 0.1);
+            --transition-speed-fast: 0.2s;
+            --border-button-outline-width: 0.5px;
+            --transition-speed-medium: 0.3s;
+            --transition-speed-slow: 0.4s;
+            --transition-speed-slower: 0.8s;
+            --transition-speed-fast: 0.1s;
+            --transition-speed-medium: 0.2s;
+            --transition-speed-slow: 0.3s;
+
+            /* Colores para las Partículas - Tema Oscuro */
+            --particle-color-dark: #ffffff;
+            --particle-line-color-dark: rgba(255, 255, 255, 1);
+
+            /* ... degradados ... */
+            --color-primary-dark-blended: rgba(12, 14, 22, 0.7);
+            --header-height: 80px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-container {
+            max-width: 600px;
+            padding: 2rem;
+            background: var(--color-secondary-dark);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px var(--shadow-strong);
+            z-index: 10;
+            position: relative;
+            animation: fadeIn 0.8s ease-in-out;
+            transition: transform var(--transition-speed-medium) ease;
+        }
+        
+        .error-container:hover {
+            transform: scale(1.02);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--color-accent);
+            margin: 0;
+            line-height: 1;
+            text-shadow: 2px 2px 4px var(--shadow-light);
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .error-message {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--color-text-light);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            animation: slideInFromTop 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        @keyframes slideInFromTop {
+            0% { opacity: 0; transform: translateY(-50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-description {
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            margin-bottom: 2rem;
+            animation: slideInFromBottom 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        @keyframes slideInFromBottom {
+            0% { opacity: 0; transform: translateY(50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .contact-info {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-divider);
+        }
+
+        .contact-info p {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .contact-info a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color var(--transition-speed-medium) ease;
+        }
+
+        .contact-info a:hover {
+            color: var(--color-accent-darker);
+            text-decoration: underline;
+        }
+
+        .btn-home {
+            display: inline-block;
+            background-color: var(--color-button-primary);
+            color: var(--color-text-light);
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: background-color var(--transition-speed-medium) ease, transform var(--transition-speed-fast) ease;
+        }
+
+        .btn-home:hover {
+            background-color: var(--color-button-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-home:active {
+            transform: translateY(0);
+        }
+
+        /* Contenedor del fondo para las partículas */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div id="particles-js"></div>
+
+<div class="error-container">
+    <h1 class="error-code">404</h1>
+    <h2 class="error-message">¡El servidor está jugando a las escondidas!</h2>
+    <p class="error-description">
+        Disculpa, parece que el servidor se nos perdió. Lo hemos buscado por todos los rincones del internet, pero no quiere salir. Si quieres unirte a la búsqueda, vuelve a intentarlo en un momento. ¡Quizás aparezca!
+    </p>
+    <a href="/" class="btn-home">Volver al Inicio</a>
+
+    <div class="contact-info">
+        <p>Si la búsqueda se vuelve complicada, puedes contactar a nuestro equipo especializado:</p>
+        <p>
+            Teléfono: <a href="tel:+50242610157">+502 4261-0157</a>
+        </p>
+        <p>
+            WhatsApp: <a href="https://wa.me/50242610157" target="_blank">+502 4261-0157</a>
+        </p>
+        <p>
+            Email: <a href="mailto:soporte.osell@gmail.com">soporte.osell@gmail.com</a>
+        </p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script>
+    particlesJS('particles-js', {
+        "particles": {
+            "number": {
+                "value": 80,
+                "density": {
+                    "enable": true,
+                    "value_area": 800
+                }
+            },
+            "color": {
+                "value": "#ffffff"
+            },
+            "shape": {
+                "type": "circle",
+                "stroke": {
+                    "width": 0,
+                    "color": "#000000"
+                }
+            },
+            "opacity": {
+                "value": 0.5,
+                "random": false
+            },
+            "size": {
+                "value": 3,
+                "random": true
+            },
+            "line_linked": {
+                "enable": true,
+                "distance": 150,
+                "color": "#ffffff",
+                "opacity": 0.4,
+                "width": 1
+            },
+            "move": {
+                "enable": true,
+                "speed": 6,
+                "direction": "none",
+                "random": false,
+                "straight": false,
+                "out_mode": "out",
+                "bounce": false
+            }
+        },
+        "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+                "onhover": {
+                    "enable": true,
+                    "mode": "grab"
+                },
+                "onclick": {
+                    "enable": true,
+                    "mode": "push"
+                },
+                "resize": true
+            },
+            "modes": {
+                "grab": {
+                    "distance": 400,
+                    "line_linked": {
+                        "opacity": 1
+                    }
+                },
+                "bubble": {
+                    "distance": 400,
+                    "size": 40,
+                    "duration": 2,
+                    "opacity": 8,
+                    "speed": 3
+                },
+                "repulse": {
+                    "distance": 200,
+                    "duration": 0.4
+                },
+                "push": {
+                    "particles_nb": 4
+                },
+                "remove": {
+                    "particles_nb": 2
+                }
+            }
+        },
+        "retina_detect": true
+    });
+</script>
+
+</body>
+</html>

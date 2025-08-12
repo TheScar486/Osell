@@ -1086,51 +1086,121 @@ document.addEventListener('keydown', function(event) {
   }
 });
 
-// Función para finalizar el pedido
+// Obtén una referencia al botón "Finalizar". Asegúrate de que el ID del botón sea 'btnFinalizar'.
+const btnFinalizar = document.getElementById('btnFinalizar');
+
 function finalizarPedido() {
+    // 1. Evitar el doble clic
+    if (btnFinalizar) {
+        btnFinalizar.disabled = true;
+        btnFinalizar.textContent = 'Enviando...';
+    }
+
     const tabla = document.querySelector('#mainOrderTable tbody');
     if (!tabla) {
         alert("No se encontró la tabla principal.");
+        if (btnFinalizar) {
+            btnFinalizar.disabled = false;
+            btnFinalizar.textContent = 'Finalizar';
+        }
         return;
     }
 
     const filas = tabla.querySelectorAll('tr');
     if (filas.length === 0) {
         alert("No hay productos para procesar.");
+        if (btnFinalizar) {
+            btnFinalizar.disabled = false;
+            btnFinalizar.textContent = 'Finalizar';
+        }
         return;
     }
 
-    const datosTabla = Array.from(filas).map(fila => {
-        const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
-        const unidad = fila.children[1]?.textContent.trim() || '';
-        const codigo = fila.children[2]?.textContent.trim() || '';
-        const descripcion = fila.children[3]?.textContent.trim() || '';
-        const proveedor = fila.children[4]?.textContent.trim() || '';
-        const precioCompra = parseFloat(fila.children[5]?.textContent) || 0;
-        const precioBase = parseFloat(fila.children[6]?.textContent) || 0;
-        const importe = parseFloat(fila.querySelector('.importe-cell')?.textContent) || 0;
+    // 2. Usar un Set para eliminar ítems duplicados
+    const codigosUnicos = new Set();
+    const datosTabla = [];
 
-        // Validación por si algún campo se sale de rango
-        if (cantidad > 2147483647) {
-            alert(`La cantidad del producto "${descripcion}" excede el límite permitido.`);
-            throw new Error('Cantidad fuera de rango');
+    Array.from(filas).forEach(fila => {
+        const codigo = fila.children[2]?.textContent.trim() || '';
+
+        // Si el código ya se procesó, salta esta fila
+        if (codigosUnicos.has(codigo)) {
+            console.warn(`Producto duplicado encontrado y omitido: ${codigo}`);
+            return;
         }
 
-        return {
-            cantidad,
-            unidad,
-            codigo,
-            descripcion,
-            proveedor,
-            precioCompra,
-            precioBase,
-            importe,
-            factor: unidad || '', // puedes usar la unidad si aplica
-            departamento: proveedor || '',
-            comentario: '',  // si no tienes input para esto
-            estado: 'Pendiente'  // valor por defecto que espera el modelo
-        };
+        codigosUnicos.add(codigo);
 
+        try {
+            const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
+            const unidad = fila.children[1]?.textContent.trim() || '';
+            const descripcion = fila.children[3]?.textContent.trim() || '';
+            const proveedor = fila.children[4]?.textContent.trim() || '';
+            const precioCompra = parseFloat(fila.children[5]?.textContent) || 0;
+            const precioBase = parseFloat(fila.children[6]?.textContent) || 0;
+            const importe = parseFloat(fila.querySelector('.importe-cell')?.textContent) || 0;
+
+            if (cantidad > 2147483647) {
+                alert(`La cantidad del producto "${descripcion}" excede el límite permitido.`);
+                throw new Error('Cantidad fuera de rango');
+            }
+
+            datosTabla.push({
+                cantidad,
+                unidad,
+                codigo,
+                descripcion,
+                proveedor,
+                precioCompra,
+                precioBase,
+                importe,
+                factor: unidad || '',
+                departamento: proveedor || '',
+                comentario: '',
+                estado: 'Pendiente'
+            });
+        } catch (error) {
+            console.error('Error al procesar la fila:', error);
+            if (btnFinalizar) {
+                btnFinalizar.disabled = false;
+                btnFinalizar.textContent = 'Finalizar';
+            }
+            return;
+        }
+    });
+
+    // 3. Envía los datos al servidor
+    fetch('URL_DE_TU_SERVIDOR/finalizar_pedido/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productos: datosTabla }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert("Pedido finalizado con éxito.");
+        console.log("Respuesta del servidor:", data);
+        // Limpiar la tabla y el localStorage si el envío es exitoso
+        tabla.innerHTML = '';
+        localStorage.removeItem('tablaTemporal');
+        actualizarTotales();
+    })
+    .catch(error => {
+        console.error("Error al finalizar el pedido:", error);
+        alert(`Ocurrió un error al finalizar el pedido: ${error.message}`);
+    })
+    .finally(() => {
+        // Habilita el botón al finalizar la operación, sin importar el resultado
+        if (btnFinalizar) {
+            btnFinalizar.disabled = false;
+            btnFinalizar.textContent = 'Finalizar';
+        }
     });
 
     // ✅ ENVÍO SEGURO (AJAX o fetch)

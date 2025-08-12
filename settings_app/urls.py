@@ -26,3 +26,8 @@ urlpatterns = [
     path('distribution/', include('apps.distribution.urls')),
     path('logistics/', include('apps.logistics.urls')),
 ]
+
+# En tu settings_app/urls.py
+from django.conf.urls import handler404
+...
+handler404 = 'apps.account.views.error_404_view'
