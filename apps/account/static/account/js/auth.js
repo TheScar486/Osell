@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // --- Lógica de petición asíncrona con límite de tiempo ---
-        const timeout = 15000; // 15 segundos en milisegundos
+        const timeout = 20000; // 20 segundos en milisegundos
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
