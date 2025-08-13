@@ -138,6 +138,8 @@ def generar_folio_pedido():
     logger.info(f"Folio de pedido generado: {folio_generado}") # <-- Agrega este log
     return folio_generado
 
+from django.db import transaction, IntegrityError
+
 @login_required
 def crear_solicitud(request):
     if request.method == 'POST':
@@ -154,59 +156,60 @@ def crear_solicitud(request):
             if not sucursal_id or not empresa_id:
                 return JsonResponse({'success': False, 'error': 'Falta información de empresa/sucursal'}, status=400)
 
-            sucursal = Sucursal.objects.get(id=sucursal_id)
-            empresa = Empresa.objects.get(id=empresa_id)
+            # Usamos un bloque with transaction.atomic() para asegurar que todas las operaciones se realicen o ninguna
+            with transaction.atomic():
+                sucursal = Sucursal.objects.get(id=sucursal_id)
+                empresa = Empresa.objects.get(id=empresa_id)
 
-            # Generar el pedido_id una sola vez para todo el pedido
-            pedido_id = generar_folio_pedido()
-            logger.info(f"Usando pedido_id para la solicitud: {pedido_id}") # <-- Agrega este log
+                # Generar el pedido_id una sola vez para todo el pedido
+                pedido_id = generar_folio_pedido()
+                logger.info(f"Usando pedido_id para la solicitud: {pedido_id}")
 
-            created_items = []
-
-            for item in datos_tabla:
-                solicitud = SolicitudPedido(
-                    cantidad=item.get('cantidad', 0),
-                    factor=item.get('factor'),
-                    codigo=item.get('codigo', ''),
-                    descripcion=item.get('descripcion', ''),
-                    departamento=item.get('departamento', ''),
-                    compra=item.get('compra'),
-                    venta=item.get('venta'),
-                    importe=item.get('importe'),
-                    comentario=item.get('comentario', ''),
-                    empresa=empresa,
-                    sucursal=sucursal,
-                    usuario=request.user,
-                    pedido_id=pedido_id, # Asegúrate de que esto se está asignando
-                    estado=item.get('estado', 'Pendiente')
-                )
-                solicitud.full_clean()
-                solicitud.save()
-                created_items.append(solicitud.id)
+                created_items = []
+                for item in datos_tabla:
+                    solicitud = SolicitudPedido(
+                        cantidad=item.get('cantidad', 0),
+                        factor=item.get('factor'),
+                        codigo=item.get('codigo', ''),
+                        descripcion=item.get('descripcion', ''),
+                        departamento=item.get('departamento', ''),
+                        compra=item.get('compra'),
+                        venta=item.get('venta'),
+                        importe=item.get('importe'),
+                        comentario=item.get('comentario', ''),
+                        empresa=empresa,
+                        sucursal=sucursal,
+                        usuario=request.user,
+                        pedido_id=pedido_id,
+                        estado=item.get('estado', 'Pendiente')
+                    )
+                    solicitud.full_clean()
+                    solicitud.save()
+                    created_items.append(solicitud.id)
             
-            logger.info(f"Pedido {pedido_id} guardado con éxito. Ítems creados: {len(created_items)}") # <-- Agrega este log
+            logger.info(f"Pedido {pedido_id} guardado con éxito. Ítems creados: {len(created_items)}")
             return JsonResponse({
                 'success': True,
                 'count': len(created_items),
                 'ids': created_items,
-                'pedido_id': pedido_id # <-- Asegúrate de que este valor no sea nulo/vacío
+                'pedido_id': pedido_id
             })
 
         except json.JSONDecodeError:
             logger.error("Datos JSON inválidos recibidos.", exc_info=True)
             return JsonResponse({'success': False, 'error': 'Datos JSON inválidos'}, status=400)
-        except Sucursal.DoesNotExist:
-            logger.error(f"Sucursal con ID {sucursal_id} no encontrada.", exc_info=True)
-            return JsonResponse({'success': False, 'error': 'Sucursal no encontrada'}, status=404)
-        except Empresa.DoesNotExist:
-            logger.error(f"Empresa con ID {empresa_id} no encontrada.", exc_info=True)
-            return JsonResponse({'success': False, 'error': 'Empresa no encontrada'}, status=404)
+        except (Sucursal.DoesNotExist, Empresa.DoesNotExist) as e:
+            logger.error(f"Entidad no encontrada: {str(e)}", exc_info=True)
+            return JsonResponse({'success': False, 'error': 'Sucursal o Empresa no encontrada'}, status=404)
         except ValidationError as e:
             logger.error(f"Error de validación al crear solicitud: {dict(e)}", exc_info=True)
             return JsonResponse({'success': False, 'error': f'Error de validación: {dict(e)}'}, status=400)
+        except IntegrityError as e:
+            logger.error(f"Error de integridad de la base de datos: {str(e)}", exc_info=True)
+            return JsonResponse({'success': False, 'error': 'Ocurrió un error en la base de datos. Por favor, inténtelo de nuevo.'}, status=500)
         except Exception as e:
-            logger.error(f"Error al crear solicitud: {str(e)}", exc_info=True)
-            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+            logger.error(f"Error inesperado al crear solicitud: {str(e)}", exc_info=True)
+            return JsonResponse({'success': False, 'error': 'Ocurrió un error inesperado'}, status=500)
 
     logger.warning("Intento de acceder a crear_solicitud con método no permitido.")
     return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)

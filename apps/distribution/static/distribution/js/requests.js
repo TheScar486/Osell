@@ -1169,41 +1169,106 @@ function finalizarPedido() {
         }
     });
 
-    // 3. Envía los datos al servidor
-    fetch('URL_DE_TU_SERVIDOR/finalizar_pedido/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productos: datosTabla }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+// Variable global para el modal de carga
+const loadingModal = document.getElementById('loadingModal');
+
+// Funciones para mostrar y ocultar el modal de carga
+function showLoadingModal() {
+    if (loadingModal) {
+        loadingModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function hideLoadingModal() {
+    if (loadingModal) {
+        loadingModal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+// Event listener para el grupo de botones, sin duplicar
+document.querySelector('.button-group').addEventListener('click', function(e) {
+    const boton = e.target.closest('button');
+    if (!boton) return;
+
+    if (boton.textContent.includes("Finalizar")) {
+        // CORRECCIÓN: Usar el mismo selector que en la función finalizarPedido
+        const tabla = document.querySelector('#mainOrderTable tbody');
+        if (!tabla || tabla.querySelectorAll('tr').length === 0) {
+            alert("No hay productos para procesar.");
+            return;
         }
-        return response.json();
-    })
-    .then(data => {
-        alert("Pedido finalizado con éxito.");
-        console.log("Respuesta del servidor:", data);
-        // Limpiar la tabla y el localStorage si el envío es exitoso
-        tabla.innerHTML = '';
-        localStorage.removeItem('tablaTemporal');
-        actualizarTotales();
-    })
-    .catch(error => {
-        console.error("Error al finalizar el pedido:", error);
-        alert(`Ocurrió un error al finalizar el pedido: ${error.message}`);
-    })
-    .finally(() => {
-        // Habilita el botón al finalizar la operación, sin importar el resultado
-        if (btnFinalizar) {
-            btnFinalizar.disabled = false;
-            btnFinalizar.textContent = 'Finalizar';
+        
+        showLoadingModal();
+        finalizarPedido();
+    }
+});
+
+// Función corregida y unificada para finalizar el pedido
+function finalizarPedido() {
+    const tabla = document.querySelector('#mainOrderTable tbody');
+    if (!tabla) {
+        hideLoadingModal();
+        alert("No se encontró la tabla principal.");
+        return;
+    }
+
+    const filas = tabla.querySelectorAll('tr');
+    if (filas.length === 0) {
+        hideLoadingModal();
+        alert("No hay productos para procesar.");
+        return;
+    }
+
+    const codigosUnicos = new Set();
+    const datosTabla = [];
+
+    Array.from(filas).forEach(fila => {
+        const codigo = fila.children[2]?.textContent.trim() || '';
+
+        if (codigosUnicos.has(codigo)) {
+            console.warn(`Producto duplicado encontrado y omitido: ${codigo}`);
+            return;
+        }
+
+        codigosUnicos.add(codigo);
+
+        try {
+            const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
+            const unidad = fila.children[1]?.textContent.trim() || '';
+            const descripcion = fila.children[3]?.textContent.trim() || '';
+            const proveedor = fila.children[4]?.textContent.trim() || '';
+            const precioCompra = parseFloat(fila.children[5]?.textContent) || 0;
+            const precioBase = parseFloat(fila.children[6]?.textContent) || 0;
+            const importe = parseFloat(fila.querySelector('.importe-cell')?.textContent) || 0;
+
+            if (cantidad > 2147483647) {
+                alert(`La cantidad del producto "${descripcion}" excede el límite permitido.`);
+                throw new Error('Cantidad fuera de rango');
+            }
+
+            datosTabla.push({
+                cantidad,
+                unidad,
+                codigo,
+                descripcion,
+                proveedor,
+                precioCompra,
+                precioBase,
+                importe,
+                factor: unidad || '',
+                departamento: proveedor || '',
+                comentario: '',
+                estado: 'Pendiente'
+            });
+        } catch (error) {
+            console.error('Error al procesar la fila:', error);
+            hideLoadingModal();
+            return;
         }
     });
 
-    // ✅ ENVÍO SEGURO (AJAX o fetch)
     fetch('/distribution/crear/', {
         method: 'POST',
         headers: {
@@ -1212,10 +1277,16 @@ function finalizarPedido() {
         },
         body: JSON.stringify({ datos: datosTabla })
     })
-    .then(response => response.json())
+    .then(response => {
+        hideLoadingModal();
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
-            const pedidoId = data.pedido_id || 'Desconocido';  // Aquí tomamos el pedidoId de la respuesta del servidor
+            const pedidoId = data.pedido_id || 'Desconocido';
             Swal.fire({
                 icon: 'success',
                 title: '¡Pedido finalizado!',
@@ -1243,7 +1314,20 @@ function finalizarPedido() {
                 location.reload();
             });
 
-            // Función para copiar al portapapeles
+            document.getElementById('copy-pedido-id')?.addEventListener('click', function() {
+                navigator.clipboard.writeText(pedidoId).then(() => {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Copiado',
+                        text: 'El ID del pedido ha sido copiado al portapapeles.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }).catch(err => {
+                    console.error('Error al copiar: ', err);
+                });
+            });
+
         } else {
             Swal.fire({
                 icon: 'error',
@@ -1253,6 +1337,7 @@ function finalizarPedido() {
         }
     })
     .catch(error => {
+        hideLoadingModal();
         console.error('Error al finalizar el pedido:', error);
         Swal.fire({
             icon: 'error',
@@ -1262,7 +1347,7 @@ function finalizarPedido() {
     });
 }
 
-// Función para obtener el CSRF token (ya está bien)
+// Función para obtener el CSRF token (ya estaba bien)
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -1278,6 +1363,7 @@ function getCookie(name) {
     return cookieValue;
 }
 
+// Ping para mantener la sesión activa (ya estaba bien)
 setInterval(() => {
     fetch('/')
         .then(response => {
@@ -1289,3 +1375,4 @@ setInterval(() => {
             console.error('Error en el ping:', error);
         });
 }, 14 * 60 * 1000); // cada 14 minutos
+}
