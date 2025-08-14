@@ -716,12 +716,6 @@ document.querySelector('.button-group').addEventListener('click', function(e) {
         // Realizamos la acción correspondiente para estos botones
         if (boton.textContent.includes("Sucursal")) {
             console.log("Botón Sucursal presionado");
-        //} else if (boton.textContent.includes("Nuevo")) {
-            //console.log("Botón Nuevo presionado");
-        } else if (boton.textContent.includes("Finalizar")) {
-            console.log("Botón Finalizar presionado");
-            // Llama la función para finalizar el pedido
-            finalizarPedido();
         }
         return; // Evitamos que el código continúe con la verificación de fila seleccionada
     }
@@ -1086,293 +1080,211 @@ document.addEventListener('keydown', function(event) {
   }
 });
 
-// Obtén una referencia al botón "Finalizar". Asegúrate de que el ID del botón sea 'btnFinalizar'.
-const btnFinalizar = document.getElementById('btnFinalizar');
+document.addEventListener('DOMContentLoaded', function() {
 
-function finalizarPedido() {
-    // 1. Evitar el doble clic
-    if (btnFinalizar) {
-        btnFinalizar.disabled = true;
-        btnFinalizar.textContent = 'Enviando...';
-    }
+    const loadingModal = document.getElementById('loadingModal');
+    const btnFinalizar = document.getElementById('btnFinalizar');
+    let isSubmitting = false;
 
-    const tabla = document.querySelector('#mainOrderTable tbody');
-    if (!tabla) {
-        alert("No se encontró la tabla principal.");
-        if (btnFinalizar) {
-            btnFinalizar.disabled = false;
-            btnFinalizar.textContent = 'Finalizar';
+    function showLoadingModal() {
+        if (loadingModal) {
+            loadingModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
         }
-        return;
     }
 
-    const filas = tabla.querySelectorAll('tr');
-    if (filas.length === 0) {
-        alert("No hay productos para procesar.");
-        if (btnFinalizar) {
-            btnFinalizar.disabled = false;
-            btnFinalizar.textContent = 'Finalizar';
+    function hideLoadingModal() {
+        if (loadingModal) {
+            loadingModal.style.display = 'none';
+            document.body.style.overflow = '';
         }
-        return;
     }
 
-    // 2. Usar un Set para eliminar ítems duplicados
-    const codigosUnicos = new Set();
-    const datosTabla = [];
-
-    Array.from(filas).forEach(fila => {
-        const codigo = fila.children[2]?.textContent.trim() || '';
-
-        // Si el código ya se procesó, salta esta fila
-        if (codigosUnicos.has(codigo)) {
-            console.warn(`Producto duplicado encontrado y omitido: ${codigo}`);
-            return;
-        }
-
-        codigosUnicos.add(codigo);
-
-        try {
-            const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
-            const unidad = fila.children[1]?.textContent.trim() || '';
-            const descripcion = fila.children[3]?.textContent.trim() || '';
-            const proveedor = fila.children[4]?.textContent.trim() || '';
-            const precioCompra = parseFloat(fila.children[5]?.textContent) || 0;
-            const precioBase = parseFloat(fila.children[6]?.textContent) || 0;
-            const importe = parseFloat(fila.querySelector('.importe-cell')?.textContent) || 0;
-
-            if (cantidad > 2147483647) {
-                alert(`La cantidad del producto "${descripcion}" excede el límite permitido.`);
-                throw new Error('Cantidad fuera de rango');
-            }
-
-            datosTabla.push({
-                cantidad,
-                unidad,
-                codigo,
-                descripcion,
-                proveedor,
-                precioCompra,
-                precioBase,
-                importe,
-                factor: unidad || '',
-                departamento: proveedor || '',
-                comentario: '',
-                estado: 'Pendiente'
-            });
-        } catch (error) {
-            console.error('Error al procesar la fila:', error);
-            if (btnFinalizar) {
-                btnFinalizar.disabled = false;
-                btnFinalizar.textContent = 'Finalizar';
-            }
-            return;
-        }
-    });
-
-// Variable global para el modal de carga
-const loadingModal = document.getElementById('loadingModal');
-
-// Funciones para mostrar y ocultar el modal de carga
-function showLoadingModal() {
-    if (loadingModal) {
-        loadingModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function hideLoadingModal() {
-    if (loadingModal) {
-        loadingModal.style.display = 'none';
-        document.body.style.overflow = '';
-    }
-}
-
-// Event listener para el grupo de botones, sin duplicar
-document.querySelector('.button-group').addEventListener('click', function(e) {
-    const boton = e.target.closest('button');
-    if (!boton) return;
-
-    if (boton.textContent.includes("Finalizar")) {
-        // CORRECCIÓN: Usar el mismo selector que en la función finalizarPedido
+    async function finalizarPedido() {
         const tabla = document.querySelector('#mainOrderTable tbody');
-        if (!tabla || tabla.querySelectorAll('tr').length === 0) {
-            alert("No hay productos para procesar.");
+        const filas = tabla.querySelectorAll('tr');
+
+        const codigosUnicos = new Set();
+        const datosTabla = [];
+        let hasProcessingError = false;
+
+        Array.from(filas).forEach(fila => {
+            if (hasProcessingError) return;
+
+            const codigo = fila.children[2]?.textContent.trim() || '';
+            if (codigosUnicos.has(codigo)) {
+                console.warn(`Producto duplicado encontrado y omitido: ${codigo}`);
+                return;
+            }
+            codigosUnicos.add(codigo);
+
+            try {
+                const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
+                const unidad = fila.children[1]?.textContent.trim() || '';
+                const descripcion = fila.children[3]?.textContent.trim() || '';
+                const proveedor = fila.children[4]?.textContent.trim() || '';
+                const precioCompra = parseFloat(fila.children[5]?.textContent) || 0;
+                const precioBase = parseFloat(fila.children[6]?.textContent) || 0;
+                const importe = parseFloat(fila.querySelector('.importe-cell')?.textContent) || 0;
+
+                if (cantidad > 2147483647) {
+                    alert(`La cantidad del producto "${descripcion}" excede el límite permitido.`);
+                    hasProcessingError = true;
+                    throw new Error('Cantidad fuera de rango');
+                }
+                
+                datosTabla.push({
+                    cantidad,
+                    unidad,
+                    codigo,
+                    descripcion,
+                    proveedor,
+                    precioCompra,
+                    precioBase,
+                    importe,
+                    factor: unidad,
+                    departamento: proveedor,
+                    comentario: '',
+                    estado: 'Pendiente'
+                });
+            } catch (error) {
+                console.error('Error al procesar la fila:', error);
+                hasProcessingError = true;
+            }
+        });
+
+        if (hasProcessingError) {
+            hideLoadingModal();
+            btnFinalizar.disabled = false;
+            btnFinalizar.textContent = 'Finalizar';
+            isSubmitting = false;
             return;
         }
-        
-        showLoadingModal();
-        finalizarPedido();
-    }
-});
-
-// Función corregida y unificada para finalizar el pedido
-function finalizarPedido() {
-    const tabla = document.querySelector('#mainOrderTable tbody');
-    if (!tabla) {
-        hideLoadingModal();
-        alert("No se encontró la tabla principal.");
-        return;
-    }
-
-    const filas = tabla.querySelectorAll('tr');
-    if (filas.length === 0) {
-        hideLoadingModal();
-        alert("No hay productos para procesar.");
-        return;
-    }
-
-    const codigosUnicos = new Set();
-    const datosTabla = [];
-
-    Array.from(filas).forEach(fila => {
-        const codigo = fila.children[2]?.textContent.trim() || '';
-
-        if (codigosUnicos.has(codigo)) {
-            console.warn(`Producto duplicado encontrado y omitido: ${codigo}`);
-            return;
-        }
-
-        codigosUnicos.add(codigo);
 
         try {
-            const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
-            const unidad = fila.children[1]?.textContent.trim() || '';
-            const descripcion = fila.children[3]?.textContent.trim() || '';
-            const proveedor = fila.children[4]?.textContent.trim() || '';
-            const precioCompra = parseFloat(fila.children[5]?.textContent) || 0;
-            const precioBase = parseFloat(fila.children[6]?.textContent) || 0;
-            const importe = parseFloat(fila.querySelector('.importe-cell')?.textContent) || 0;
-
-            if (cantidad > 2147483647) {
-                alert(`La cantidad del producto "${descripcion}" excede el límite permitido.`);
-                throw new Error('Cantidad fuera de rango');
-            }
-
-            datosTabla.push({
-                cantidad,
-                unidad,
-                codigo,
-                descripcion,
-                proveedor,
-                precioCompra,
-                precioBase,
-                importe,
-                factor: unidad || '',
-                departamento: proveedor || '',
-                comentario: '',
-                estado: 'Pendiente'
-            });
-        } catch (error) {
-            console.error('Error al procesar la fila:', error);
-            hideLoadingModal();
-            return;
-        }
-    });
-
-    fetch('/distribution/crear/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({ datos: datosTabla })
-    })
-    .then(response => {
-        hideLoadingModal();
-        if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            const pedidoId = data.pedido_id || 'Desconocido';
-            Swal.fire({
-                icon: 'success',
-                title: '¡Pedido finalizado!',
-                html: `
-                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
-                        <strong>Pedido ID:</strong> 
-                        <span style="color:#f0f0f0; font-weight: bold;" id="pedido-id-text">${pedidoId}</span>
-                        <button id="copy-pedido-id" class="copy-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width: 16px; height: 16px; fill: #f0f0f0;">
-                                <path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/>
-                            </svg>
-                        </button>
-                    </div>
-                `,
-                confirmButtonText: 'Aceptar',
-                background: '#1e1e1e',
-                color: '#f0f0f0',
-                customClass: {
-                    confirmButton: 'pedido-confirm-button'
+            const response = await fetch('/distribution/crear/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
                 },
-                backdrop: false,
-                buttonsStyling: false
-            }).then(() => {
-                localStorage.removeItem('tablaTemporal');
-                location.reload();
+                body: JSON.stringify({ datos: datosTabla })
             });
 
-            document.getElementById('copy-pedido-id')?.addEventListener('click', function() {
-                navigator.clipboard.writeText(pedidoId).then(() => {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Copiado',
-                        text: 'El ID del pedido ha sido copiado al portapapeles.',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                }).catch(err => {
-                    console.error('Error al copiar: ', err);
+            if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+
+            const data = await response.json();
+
+            if (data.success) {
+                const pedidoId = data.pedido_id || 'Desconocido';
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Pedido finalizado!',
+                    html: `
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <strong>Pedido ID:</strong> 
+                            <span style="color:#f0f0f0; font-weight: bold;" id="pedido-id-text">${pedidoId}</span>
+                            <button id="copy-pedido-id" class="copy-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width: 16px; height: 16px; fill: #f0f0f0;">
+                                    <path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    `,
+                    confirmButtonText: 'Aceptar',
+                    background: '#1e1e1e',
+                    color: '#f0f0f0',
+                    customClass: { confirmButton: 'pedido-confirm-button' },
+                    backdrop: false,
+                    buttonsStyling: false
+                }).then(() => {
+                    localStorage.removeItem('tablaTemporal');
+                    location.reload();
                 });
-            });
 
-        } else {
+                document.getElementById('copy-pedido-id')?.addEventListener('click', function() {
+                    navigator.clipboard.writeText(pedidoId).then(() => {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Copiado',
+                            text: 'El ID del pedido ha sido copiado al portapapeles.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    });
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error || 'Ocurrió un error al finalizar el pedido.',
+                });
+            }
+        } catch (error) {
+            console.error('Error al finalizar el pedido:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: data.error || 'Ocurrió un error al finalizar el pedido.',
+                text: 'Ocurrió un error al procesar el pedido.',
             });
-        }
-    })
-    .catch(error => {
-        hideLoadingModal();
-        console.error('Error al finalizar el pedido:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ocurrió un error al procesar el pedido.',
-        });
-    });
-}
-
-// Función para obtener el CSRF token (ya estaba bien)
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
+        } finally {
+            hideLoadingModal();
+            btnFinalizar.disabled = false;
+            btnFinalizar.textContent = 'Finalizar';
+            isSubmitting = false;
         }
     }
-    return cookieValue;
-}
 
-// Ping para mantener la sesión activa (ya estaba bien)
-setInterval(() => {
-    fetch('/')
-        .then(response => {
-            if (!response.ok) {
-                console.warn('Ping falló con estado:', response.status);
+    // Bloqueo inmediato del doble clic
+    document.querySelector('.button-group').addEventListener('click', function(e) {
+        const boton = e.target.closest('button');
+        if (!boton || boton.id !== 'btnFinalizar') return;
+
+        // 🔹 Si ya se está procesando, salir
+        if (isSubmitting) return;
+
+        const tabla = document.querySelector('#mainOrderTable tbody');
+        if (!tabla || tabla.querySelectorAll('tr').length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'No hay productos para procesar.',
+            });
+            return;
+        }
+
+        // 🔹 Bloquear antes de iniciar
+        isSubmitting = true;
+        boton.disabled = true;
+        boton.textContent = 'Enviando...';
+        showLoadingModal();
+
+        finalizarPedido();
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
-        })
-        .catch(error => {
-            console.error('Error en el ping:', error);
-        });
-}, 14 * 60 * 1000); // cada 14 minutos
-}
+        }
+        return cookieValue;
+    }
+
+    setInterval(() => {
+        fetch('/')
+            .then(response => {
+                if (!response.ok) console.warn('Ping falló con estado:', response.status);
+            })
+            .catch(error => {
+                console.error('Error en el ping:', error);
+            });
+    }, 14 * 60 * 1000);
+
+});
