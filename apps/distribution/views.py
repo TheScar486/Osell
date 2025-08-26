@@ -214,21 +214,20 @@ def crear_solicitud(request):
     logger.warning("Intento de acceder a crear_solicitud con método no permitido.")
     return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import SolicitudPedido
 from .serializers import SolicitudPedidoSerializer
 
-class SolicitudPedidoListView(APIView):
+class SolicitudPedidoListView(ListAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = SolicitudPedidoSerializer
 
-    def get(self, request):
-        # Filtrar las solicitudes por empresa del usuario autenticado
-        empresa_usuario = request.user.empresa  # Obtener la empresa del usuario
+    def get_queryset(self):
+        empresa_usuario = self.request.user.empresa
         pedidos = SolicitudPedido.objects.filter(usuario__empresa=empresa_usuario).order_by('-fecha_registro')
 
-        # Agrupar manualmente por pedido_id para no mostrar las mismas solicitudes múltiples veces
+        # Evitar duplicados por pedido_id
         vistos = {}
         pedidos_unicos = []
         for p in pedidos:
@@ -236,8 +235,7 @@ class SolicitudPedidoListView(APIView):
                 vistos[p.pedido_id] = True
                 pedidos_unicos.append(p)
 
-        serializer = SolicitudPedidoSerializer(pedidos_unicos, many=True)
-        return Response(serializer.data)
+        return pedidos_unicos
 
 from django.http import HttpResponse
 import openpyxl
