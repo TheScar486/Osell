@@ -9,3 +9,9 @@ secret.txt
 
 # Ignorar todos los archivos en la carpeta temp
 temp/
+
+# Ignorar archivos .env en la raíz
+.env
+
+# Ignorar el .env dentro de settings_app
+/settings_app/.env

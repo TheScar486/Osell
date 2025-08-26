@@ -1,39 +1,54 @@
-// renderizado de la tabla de distribución junto con el filtrado de búsqueda
 document.addEventListener("DOMContentLoaded", function() {
-    fetch('/distribution/api/solicitudes/')
-        .then(response => response.json())
-        .then(data => {
-            const tbody = document.querySelector('table tbody');
-            let allRows = [];
+    const tbody = document.querySelector('table tbody');
+    const searchInput = document.querySelector('.search-input');
+    let currentPage = 1;
+    const limit = 50;
+    let allRows = [];
 
-            data.forEach(p => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${p.pedido_id ?? ''}</td>
-                    <td>${p.usuario_nombre ?? ''}</td>
-                    <td>${p.grupo_nombre ?? ''}</td>
-                    <td>${p.estado}</td>
-                    <td>${new Date(p.fecha_registro).toLocaleString()}</td> <!-- Mantienes la fecha -->
-                    <td>${p.tipo ?? ''}</td>
-                `;
-                allRows.push(row);
-                tbody.appendChild(row);
-            });
+    function loadPage(page = 1, searchTerm = "") {
+        fetch(`/distribution/api/solicitudes/?page=${page}&limit=${limit}&search=${encodeURIComponent(searchTerm)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (page === 1) { 
+                    tbody.innerHTML = ""; 
+                    allRows = []; 
+                }
 
-            // Filtro sin considerar la columna de fecha (índice 4)
-            const searchInput = document.querySelector('.search-input');
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                tbody.innerHTML = '';
-
-                allRows.forEach(row => {
-                    const cells = Array.from(row.cells).filter((_, i) => i !== 4); // omitimos columna de fecha
-                    const rowText = cells.map(cell => cell.textContent.toLowerCase()).join(' ');
-
-                    if (rowText.includes(searchTerm)) {
-                        tbody.appendChild(row);
-                    }
+                data.results.forEach(p => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${p.pedido_id ?? ''}</td>
+                        <td>${p.usuario_nombre ?? ''}</td>
+                        <td>${p.grupo_nombre ?? ''}</td>
+                        <td>${p.estado}</td>
+                        <td>${new Date(p.fecha_registro).toLocaleString()}</td>
+                        <td>${p.tipo ?? ''}</td>
+                    `;
+                    allRows.push(row);
+                    tbody.appendChild(row);
                 });
+
+                // Botón para cargar más si hay más páginas
+                if (page < data.pages) {
+                    document.getElementById("loadMore").style.display = "block";
+                } else {
+                    document.getElementById("loadMore").style.display = "none";
+                }
             });
-        });
+    }
+
+    // Buscar
+    searchInput.addEventListener("input", function() {
+        currentPage = 1;
+        loadPage(currentPage, this.value.toLowerCase());
+    });
+
+    // Botón para cargar más
+    document.getElementById("loadMore").addEventListener("click", function() {
+        currentPage++;
+        loadPage(currentPage, searchInput.value.toLowerCase());
+    });
+
+    // Carga inicial
+    loadPage();
 });
