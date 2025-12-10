@@ -1,3 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantenimiento - OSell</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Inter/Roboto similar a la imagen) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f1115; /* Fondo muy oscuro como en la imagen */
+            color: #e5e7eb;
+        }
+        
+        /* Efecto de brillo sutil en la tarjeta */
+        .glass-card {
+            background-color: #1f2937; /* Gris oscuro para la tarjeta */
+            border: 1px solid #374151;
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Animación suave para el icono de error */
+        .pulse-red {
+            animation: pulse-red 2s infinite;
+        }
+        
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+
+    <!-- Fondo decorativo sutil (gradiente oscuro) -->
+    <div class="absolute inset-0 z-0 opacity-40">
+        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-gray-900 to-[#0f1115]"></div>
+    </div>
+
+    <!-- Contenedor Principal -->
+    <div class="relative z-10 w-full max-w-lg glass-card rounded-3xl overflow-hidden">
+        
+        <!-- Encabezado con Logo y Estado -->
+        <div class="p-8 pb-0 text-center">
+            <h2 class="text-3xl font-bold tracking-tight text-white mb-2">OSell</h2>
+            <div class="inline-flex items-center px-3 py-1 rounded-full bg-red-900/30 border border-red-800 text-red-400 text-xs font-semibold uppercase tracking-wide mb-6">
+                <span class="w-2 h-2 rounded-full bg-red-500 mr-2 animate-pulse"></span>
+                Sistema Inhabilitado
+            </div>
+        </div>
+
+        <!-- Icono Central -->
+        <div class="flex justify-center mb-6">
+            <div class="relative w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700 pulse-red">
+                <i class="fas fa-database text-4xl text-gray-400"></i>
+                <div class="absolute -bottom-1 -right-1 bg-gray-900 rounded-full p-1 border border-gray-700">
+                    <i class="fas fa-times-circle text-2xl text-red-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensaje Principal -->
+        <div class="px-8 text-center">
+            <h1 class="text-xl font-semibold text-white mb-3">Servicio no disponible temporalmente</h1>
+            <p class="text-gray-400 text-sm leading-relaxed mb-6 text-justify">
+                El servidor de base de datos MySQL ha experimentado una interrupción inesperada, provocando su apagado y el cese de sus funciones. Por medidas de seguridad, el acceso a la plataforma permanecerá temporalmente suspendido mientras se aplican los parches de seguridad correspondientes y se trabaja en la reestructuración de la base de datos. Nuestro equipo técnico se encuentra realizando los procedimientos necesarios para restaurar la operatividad del sistema. Cualquier novedad será notificada oportunamente.
+            </p>
+        </div>
+
+        <!-- Botones de Acción (Estilo OSell) -->
+        <div class="p-8 pt-2 bg-gray-800/50 border-t border-gray-700/50">
+            <p class="text-center text-xs text-gray-500 mb-4 uppercase tracking-wider font-semibold">Contactar Soporte</p>
+            
+            <div class="grid gap-3">
+                <!-- Botón WhatsApp -->
+                <a href="https://wa.me/50245064229" target="_blank" class="flex items-center justify-center w-full py-3.5 px-4 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-green-500/50 text-white rounded-xl transition-all duration-300 group">
+                    <i class="fab fa-whatsapp text-xl text-green-400 mr-3 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium text-sm">WhatsApp: +502 45064229</span>
+                </a>
+
+                <!-- Botón Correo -->
+                <a href="mailto:soporte.osell@gmail.com" class="flex items-center justify-center w-full py-3.5 px-4 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-blue-500/50 text-white rounded-xl transition-all duration-300 group">
+                    <i class="fas fa-envelope text-xl text-blue-400 mr-3 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium text-sm">soporte.osell@gmail.com</span>
+                </a>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <p class="text-xs text-gray-600">ID de Incidencia: #DB-503-ERR</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Simple -->
+    <div class="relative z-10 mt-8 text-center">
+        <p class="text-xs text-gray-600">&copy; <span id="year"></span> OSell. Todos los derechos reservados.</p>
+    </div>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
+{% block extra_body %}
+    <script src="{% static 'account/js/auth.js' %}"></script>
+{% endblock %}
+
+<!--
 {% load static %}
 
 {% block title %}{% endblock %}
@@ -57,7 +172,4 @@
     </div>
 </div>
 {% endblock %}
-
-{% block extra_body %}
-    <script src="{% static 'account/js/auth.js' %}"></script>
-{% endblock %}
+-->
