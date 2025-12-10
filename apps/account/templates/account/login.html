@@ -17,6 +17,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #0f1115;
             color: #e5e7eb;
+            height: 100dvh; /* Altura dinámica para móviles */
         }
         
         .glass-card {
@@ -35,16 +36,11 @@
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        /* Estilos para el asistente AI */
-        .ai-response-area {
-            min-height: 60px;
-            transition: all 0.3s ease;
-        }
-        
+        /* Indicador de escritura más pequeño */
         .typing-indicator span {
             display: inline-block;
-            width: 6px;
-            height: 6px;
+            width: 4px;
+            height: 4px;
             background-color: #9ca3af;
             border-radius: 50%;
             animation: typing 1.4s infinite ease-in-out both;
@@ -59,213 +55,176 @@
             40% { transform: scale(1); }
         }
 
-        /* Scrollbar personalizado para el área de chat */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1f2937; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4b5563; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280; 
-        }
+        /* Scrollbar estilizado */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-y-auto">
+<body class="w-full flex items-center justify-center p-2 overflow-y-auto overflow-x-hidden">
 
-    <!-- Fondo decorativo -->
-    <div class="absolute inset-0 z-0 opacity-40 fixed">
+    <!-- Fondo decorativo fijo -->
+    <div class="fixed inset-0 z-0 opacity-40 pointer-events-none">
         <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-gray-900 to-[#0f1115]"></div>
     </div>
 
-    <!-- Contenedor Principal -->
-    <div class="relative z-10 w-full max-w-lg glass-card rounded-3xl overflow-hidden my-8">
+    <!-- Contenedor Principal: Se adapta para llenar pantalla o centrarse -->
+    <div class="relative z-10 w-full max-w-lg glass-card rounded-2xl md:rounded-3xl overflow-hidden flex flex-col shadow-2xl">
         
-        <!-- Encabezado -->
-        <div class="p-8 pb-0 text-center">
-            <h2 class="text-3xl font-bold tracking-tight text-white mb-2">OSell</h2>
-            <div class="inline-flex items-center px-3 py-1 rounded-full bg-red-900/30 border border-red-800 text-red-400 text-xs font-semibold uppercase tracking-wide mb-6">
-                <span class="w-2 h-2 rounded-full bg-red-500 mr-2 animate-pulse"></span>
-                Sistema Inhabilitado
+        <!-- Encabezado Compacto -->
+        <div class="pt-5 px-5 text-center shrink-0">
+            <h2 class="text-2xl font-bold tracking-tight text-white mb-1">OSell</h2>
+            <!-- Badge más pequeño -->
+            <div class="inline-flex items-center px-2 py-0.5 rounded-full bg-red-900/30 border border-red-800 text-red-400 text-[10px] font-semibold uppercase tracking-wide mb-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5 animate-pulse"></span>
+                Inhabilitado
             </div>
         </div>
 
-        <!-- Icono Central -->
-        <div class="flex justify-center mb-6">
-            <div class="relative w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700 pulse-red">
-                <i class="fas fa-database text-4xl text-gray-400"></i>
-                <div class="absolute -bottom-1 -right-1 bg-gray-900 rounded-full p-1 border border-gray-700">
-                    <i class="fas fa-times-circle text-2xl text-red-500"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mensaje Principal -->
-        <div class="px-8 text-center">
-            <h1 class="text-xl font-semibold text-white mb-3">Servicio no disponible temporalmente</h1>
-            <p class="text-gray-400 text-sm leading-relaxed mb-6 text-justify">
-                El servidor de base de datos MySQL ha experimentado una interrupción inesperada, provocando su apagado y el cese de sus funciones. Por medidas de seguridad, el acceso a la plataforma permanecerá temporalmente suspendido mientras se aplican los parches de seguridad correspondientes.
-            </p>
-        </div>
-
-        <!-- ✨ NUEVA SECCIÓN: Asistente AI Gemini ✨ -->
-        <div class="mx-6 mb-6 p-4 bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-50"></div>
+        <!-- Cuerpo Scrolleable si es necesario -->
+        <div class="flex-1 overflow-y-auto px-5 pb-2">
             
-            <div class="flex items-center mb-3">
-                <div class="bg-indigo-500/20 p-2 rounded-lg mr-3">
-                    <i class="fas fa-robot text-indigo-400 text-lg"></i>
-                </div>
-                <div>
-                    <h3 class="text-white font-semibold text-sm">Asistente de Soporte AI ✨</h3>
-                    <p class="text-xs text-indigo-300">Impulsado por Gemini</p>
-                </div>
-            </div>
-
-            <p class="text-xs text-gray-300 mb-3">
-                ¿Tienes dudas sobre tus datos o una urgencia? Describe tu situación y la IA te ayudará a entender el problema o redactará un mensaje para soporte.
-            </p>
-
-            <div class="space-y-3">
-                <textarea 
-                    id="userQuery" 
-                    rows="2" 
-                    class="w-full bg-gray-900/80 border border-gray-700 text-gray-200 text-sm rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none resize-none placeholder-gray-600 transition-all"
-                    placeholder="Ej: '¿Mis datos están seguros?' o 'Necesito facturar urgentemente...'"></textarea>
-                
-                <button 
-                    onclick="askGemini()" 
-                    id="askBtn"
-                    class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-indigo-900/50">
-                    <span>✨ Consultar al Asistente</span>
-                    <i class="fas fa-paper-plane text-xs"></i>
-                </button>
-
-                <!-- Área de Respuesta -->
-                <div id="responseArea" class="hidden mt-3 bg-gray-900/90 rounded-lg p-3 border border-gray-700/50">
-                    <div id="loadingIndicator" class="hidden text-center py-2">
-                        <div class="typing-indicator">
-                            <span></span><span></span><span></span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Analizando estado del servidor...</p>
+            <!-- Icono y Mensaje Integrados -->
+            <div class="flex flex-col items-center mb-4">
+                <!-- Icono Reducido -->
+                <div class="relative w-14 h-14 md:w-20 md:h-20 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700 pulse-red mb-3 shrink-0">
+                    <i class="fas fa-database text-xl md:text-3xl text-gray-400"></i>
+                    <div class="absolute -bottom-1 -right-1 bg-gray-900 rounded-full p-0.5 border border-gray-700">
+                        <i class="fas fa-times-circle text-lg text-red-500"></i>
                     </div>
-                    <div id="aiContent" class="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap hidden"></div>
+                </div>
+
+                <h1 class="text-base md:text-xl font-semibold text-white mb-2 text-center">Servicio no disponible</h1>
+                <p class="text-gray-400 text-xs md:text-sm leading-relaxed text-justify">
+                    El servidor MySQL tuvo una interrupción inesperada. Por seguridad, el acceso está suspendido temporalmente mientras aplicamos parches. Tus datos están seguros.
+                </p>
+            </div>
+
+            <!-- ✨ Asistente AI Compacto ✨ -->
+            <div class="mb-4 p-3 bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-lg relative overflow-hidden shrink-0">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-robot text-indigo-400 text-sm mr-2"></i>
+                    <h3 class="text-white font-semibold text-xs">Asistente AI ✨</h3>
+                </div>
+
+                <div class="space-y-2">
+                    <textarea 
+                        id="userQuery" 
+                        rows="1" 
+                        class="w-full bg-gray-900/80 border border-gray-700 text-gray-200 text-xs rounded-md p-2 focus:ring-1 focus:ring-indigo-500 outline-none resize-none placeholder-gray-600"
+                        placeholder="Pregunta aquí (ej: '¿Mis datos están bien?')..."></textarea>
+                    
+                    <button 
+                        onclick="askGemini()" 
+                        id="askBtn"
+                        class="w-full py-1.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-md flex items-center justify-center gap-2 shadow-lg">
+                        <span>Consultar</span>
+                        <i class="fas fa-paper-plane text-[10px]"></i>
+                    </button>
+
+                    <!-- Área de Respuesta -->
+                    <div id="responseArea" class="hidden mt-2 bg-gray-900/95 rounded-md p-2 border border-gray-700/50">
+                        <div id="loadingIndicator" class="hidden text-center py-1">
+                            <div class="typing-indicator"><span></span><span></span><span></span></div>
+                        </div>
+                        <div id="aiContent" class="text-xs text-gray-300 leading-relaxed whitespace-pre-wrap hidden"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Botones de Acción (Estilo OSell) -->
-        <div class="p-8 pt-2 bg-gray-800/50 border-t border-gray-700/50">
-            <p class="text-center text-xs text-gray-500 mb-4 uppercase tracking-wider font-semibold">Contactar Soporte</p>
-            
-            <div class="grid gap-3">
-                <a href="https://wa.me/50245064229" target="_blank" class="flex items-center justify-center w-full py-3.5 px-4 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-green-500/50 text-white rounded-xl transition-all duration-300 group">
-                    <i class="fab fa-whatsapp text-xl text-green-400 mr-3 group-hover:scale-110 transition-transform"></i>
-                    <span class="font-medium text-sm">WhatsApp: +502 45064229</span>
+        <!-- Footer / Botones Fijos abajo -->
+        <div class="p-5 pt-3 bg-gray-800/50 border-t border-gray-700/50 shrink-0">
+            <div class="grid grid-cols-2 gap-3">
+                <a href="https://wa.me/50245064229" target="_blank" class="flex flex-col items-center justify-center py-2 px-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-green-500/50 text-white rounded-lg transition-all group">
+                    <i class="fab fa-whatsapp text-lg text-green-400 mb-1 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-[10px] md:text-xs font-medium">WhatsApp</span>
                 </a>
-
-                <a href="mailto:soporte.osell@gmail.com" class="flex items-center justify-center w-full py-3.5 px-4 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-blue-500/50 text-white rounded-xl transition-all duration-300 group">
-                    <i class="fas fa-envelope text-xl text-blue-400 mr-3 group-hover:scale-110 transition-transform"></i>
-                    <span class="font-medium text-sm">soporte.osell@gmail.com</span>
+                <a href="mailto:soporte.osell@gmail.com" class="flex flex-col items-center justify-center py-2 px-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-blue-500/50 text-white rounded-lg transition-all group">
+                    <i class="fas fa-envelope text-lg text-blue-400 mb-1 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-[10px] md:text-xs font-medium">Correo</span>
                 </a>
             </div>
             
-            <div class="mt-6 text-center">
-                <p class="text-xs text-gray-600">ID de Incidencia: #DB-503-ERR</p>
+            <div class="mt-3 flex justify-between items-center text-[10px] text-gray-500">
+                <span>ID: #DB-503</span>
+                <span>&copy; <span id="year"></span> OSell</span>
             </div>
         </div>
-    </div>
-
-    <!-- Footer Simple -->
-    <div class="relative z-10 mt-2 mb-8 text-center">
-        <p class="text-xs text-gray-600">&copy; <span id="year"></span> OSell. Powered by Gemini AI.</p>
     </div>
 
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        const apiKey = "AIzaSyAIAdLXmGMTL8-k9hWrQNvLbOGY6rzzZz0"; // La clave API se inyecta automáticamente
+        // ⚠️ COLOCA TU API KEY AQUÍ PARA PRODUCCIÓN ⚠️
+        const apiKey = "AIzaSyAIAdLXmGMTL8-k9hWrQNvLbOGY6rzzZz0"; 
 
         async function askGemini() {
             const userQuery = document.getElementById('userQuery').value.trim();
             if (!userQuery) return;
 
-            // UI Updates
             const askBtn = document.getElementById('askBtn');
             const responseArea = document.getElementById('responseArea');
             const loadingIndicator = document.getElementById('loadingIndicator');
             const aiContent = document.getElementById('aiContent');
 
-            askBtn.disabled = true;
-            askBtn.classList.add('opacity-75', 'cursor-not-allowed');
-            responseArea.classList.remove('hidden');
-            loadingIndicator.classList.remove('hidden');
+            // Preparar UI
+            aiContent.innerHTML = '';
             aiContent.classList.add('hidden');
-            aiContent.textContent = '';
+            responseArea.classList.remove('hidden');
+            
+            // Validación de API Key
+            if (!apiKey || apiKey === "") {
+                aiContent.classList.remove('hidden');
+                aiContent.innerHTML = `<span class="text-yellow-400 font-bold"><i class="fas fa-exclamation-triangle"></i> Falta API Key</span>`;
+                return;
+            }
 
-            // Contexto del sistema para Gemini
+            askBtn.disabled = true;
+            askBtn.classList.add('opacity-75');
+            loadingIndicator.classList.remove('hidden');
+
             const systemPrompt = `
-                Eres "OSell AI", un asistente de soporte técnico para una plataforma SaaS que está caída.
-                Contexto actual:
-                - Problema: Servidor MySQL apagado inesperadamente.
-                - Acción: Se están aplicando parches de seguridad y reestructurando la DB.
-                - Estado de datos: Seguros, es una medida preventiva.
-                - Contacto humano: WhatsApp +502 45064229, Correo soporte.osell@gmail.com.
-                
-                Tu tarea:
-                Responde a la consulta del usuario de forma breve, profesional y empática en Español.
-                1. Si preguntan por sus datos, tranquilízalos explicando que es un mantenimiento de seguridad.
-                2. Si tienen una urgencia operativa (ej: facturar), redacta un mensaje corto y formal que ellos puedan copiar y pegar para enviar por WhatsApp al soporte técnico. Usa formato: "Puedes enviar esto: [Mensaje]".
-                3. Mantén un tono técnico pero accesible. Usa emojis limitados (máximo 1).
+                Eres "OSell AI". Sistema caído por fallo MySQL (seguridad/parches).
+                Responde MUY BREVE (máx 2 frases) a: "${userQuery}".
+                Tranquiliza sobre datos seguros o da mensaje corto para soporte.
             `;
 
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: `Consulta del usuario: ${userQuery}` }]
-                        }],
-                        systemInstruction: {
-                            parts: [{ text: systemPrompt }]
-                        }
+                        contents: [{ parts: [{ text: userQuery }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
                     })
                 });
 
                 const data = await response.json();
-                
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
+                if (data.error) throw new Error(data.error.message);
 
                 const aiResponse = data.candidates[0].content.parts[0].text;
                 
-                // Mostrar respuesta
                 loadingIndicator.classList.add('hidden');
                 aiContent.classList.remove('hidden');
                 aiContent.textContent = aiResponse;
 
+                // Scroll suave hacia la respuesta si es necesario
+                responseArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
             } catch (error) {
-                console.error("Error:", error);
+                console.error(error);
                 loadingIndicator.classList.add('hidden');
                 aiContent.classList.remove('hidden');
-                aiContent.innerHTML = `<span class="text-red-400"><i class="fas fa-exclamation-triangle"></i> Error al conectar con el asistente. Por favor usa los botones de contacto directos.</span>`;
+                aiContent.innerHTML = `<span class="text-red-400">Error de conexión.</span>`;
             } finally {
                 askBtn.disabled = false;
-                askBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                askBtn.classList.remove('opacity-75');
             }
         }
     </script>
 </body>
 </html>
-
 <!--
 {% load static %}
 
